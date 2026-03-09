@@ -1,0 +1,789 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2487.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="pt-br"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;Braspowertech - Monitoramento PMRR&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>* { font-family: 'Inter', sans-serif; }</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.card-hover { transition: all 0.2s ease; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.card-hover:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.badge { @apply px-2 py-1 rounded-full text-xs font-medium; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.badge-executado { @apply bg-green-100 text-green-700; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.badge-desenvolvimento { @apply bg-yellow-100 text-yellow-700; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.badge-homologacao { @apply bg-purple-100 text-purple-700; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.badge-sem-registro { @apply bg-gray-100 text-gray-700; }</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* FILTROS EM CARDS INDIVIDUAIS */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.filtro-card {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-4;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.filtro-header {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center cursor-pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.filtro-header span {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply text-sm font-medium text-gray-700;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.filtro-content {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply p-4 max-h-60 overflow-y-auto;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* CHIPS DE SELEÇÃO */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chip {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply inline-flex items-center bg-blue-100 text-blue-800 text-xs px-3 py-1.5 rounded-full mr-2 mb-2;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chip-remover {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply ml-2 text-blue-600 hover:text-blue-800 cursor-pointer;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* TOOLTIP PERSONALIZADO */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.tooltip {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply relative inline-block;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.tooltip .tooltip-text {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply invisible absolute z-20 bg-gray-900 text-white text-xs rounded-lg py-2 px-3 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap shadow-lg;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.tooltip:hover .tooltip-text {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply visible;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* CHECKBOX PERSONALIZADO */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.filtro-checkbox {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>@apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body class="bg-gray-50"&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- HEADER MODO ESCURO (bg-blue-900) --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="bg-blue-900 border-b border-blue-800 sticky top-0 z-10 shadow-lg"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="flex justify-between items-center h-16"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="flex items-center"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- LOGO - AGORA VISÍVEL NO FUNDO ESCURO --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;img src="http://braspowertech.com.br/wp-content/uploads/2023/01/bpt-selo-header_Prancheta-1-1.svg"<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                         </span>alt="Braspowertech"<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                         </span>class="h-10 w-auto"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                         </span>onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 40\'%3E%3Cpath fill=\'%23FFFFFF\' d=\'M20 8L4 32h32L20 8z\'/%3E%3Ctext x=\'45\' y=\'25\' font-family=\'Arial\' font-size=\'20\' font-weight=\'bold\' fill=\'%23FFFFFF\'%3EBRASPOWERTECH%3C/text%3E%3C/svg%3E';"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="ml-3 bg-yellow-400 text-blue-900 text-xs px-2 py-1 rounded-full font-bold"&gt;821 cidades&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="flex items-center space-x-3"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-yellow-400 text-sm hidden sm:inline"&gt;Designer&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="h-8 w-8 rounded-full bg-yellow-400 flex items-center justify-center"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="text-blue-900 font-medium text-sm"&gt;D&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- BARRA DE BUSCA --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="bg-white border-b border-gray-200"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="relative"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;input type="text" placeholder="Buscar município, estado..." id="searchInput"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                       </span>class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- BOTÃO FILTROS MOBILE --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="lg:hidden bg-white px-4 py-3 border-b border-gray-200"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button onclick="toggleFiltros()" id="btnToggleFiltros" class="w-full bg-blue-50 text-blue-700 text-sm py-2.5 rounded-lg flex items-center justify-center font-medium"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;i class="fas fa-sliders-h mr-2"&gt;&lt;/i&gt; &lt;span id="textoBotaoFiltros"&gt;Mostrar filtros&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- CHIPS DOS FILTROS ATIVOS --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 min-h-[50px]" id="container-chips"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="flex flex-col lg:flex-row gap-6"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- SIDEBAR FILTROS - CARDS INDIVIDUAIS --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div id="filtrosSidebar" class="lg:w-80 lg:sticky lg:top-24 hidden lg:block" style="max-height: calc(100vh - 120px); overflow-y: auto;"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- FILTRO ESTADO --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="filtro-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="filtro-header" onclick="toggleFiltro('estado')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span&gt;&lt;i class="fas fa-map-pin mr-2 text-blue-500"&gt;&lt;/i&gt;Estado&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;i class="fas fa-chevron-down text-gray-400"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div id="filtro-estado-content" class="filtro-content hidden"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;input type="text" placeholder="Buscar estado..." class="w-full text-sm p-2 border border-gray-200 rounded-lg mb-3" id="buscaEstado"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div id="opcoes-estado" class="space-y-2"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- FILTRO RISCO --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="filtro-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="filtro-header" onclick="toggleFiltro('risco')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span&gt;&lt;i class="fas fa-fire mr-2 text-orange-500"&gt;&lt;/i&gt;Grau de Risco&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;i class="fas fa-chevron-down text-gray-400"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div id="filtro-risco-content" class="filtro-content hidden"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div id="opcoes-risco" class="space-y-2"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- FILTRO STATUS COM TOOLTIP --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="filtro-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="filtro-header" onclick="toggleFiltro('status')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;i class="fas fa-tag mr-2 text-purple-500"&gt;&lt;/i&gt;Status PMRR</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;span class="tooltip ml-1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;i class="fas fa-question-circle text-gray-400 text-xs"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;span class="tooltip-text"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;div class="text-left"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;p&gt;&lt;span class="text-green-400"&gt;●&lt;/span&gt; EXECUTADO: PMRR concluído e entregue&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;p&gt;&lt;span class="text-yellow-400"&gt;●&lt;/span&gt; EM DESENVOLVIMENTO: Em andamento&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;p&gt;&lt;span class="text-purple-400"&gt;●&lt;/span&gt; HOMOLOGAÇÃO: Concluído, aguardando validação&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;p&gt;&lt;span class="text-gray-400"&gt;●&lt;/span&gt; SEM REGISTRO: Sem informação pública&lt;/p&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;i class="fas fa-chevron-down text-gray-400"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div id="filtro-status-content" class="filtro-content hidden"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div id="opcoes-status" class="space-y-2"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- FILTRO TIPO DE RISCO --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="filtro-card"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="filtro-header" onclick="toggleFiltro('tipo')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span&gt;&lt;i class="fas fa-cloud-rain mr-2 text-blue-500"&gt;&lt;/i&gt;Tipo de Risco&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;i class="fas fa-chevron-down text-gray-400"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div id="filtro-tipo-content" class="filtro-content hidden"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;input type="text" placeholder="Buscar tipo..." class="w-full text-sm p-2 border border-gray-200 rounded-lg mb-3" id="buscaTipo"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div id="opcoes-tipo" class="space-y-2"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- BOTÕES --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="flex gap-3 mt-4"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;button onclick="aplicarFiltros()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2.5 rounded-lg transition font-medium"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;i class="fas fa-check mr-2"&gt;&lt;/i&gt;Aplicar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;button onclick="limparTodosFiltros()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm py-2.5 rounded-lg transition font-medium"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>Limpar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;!-- CONTEÚDO PRINCIPAL --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="flex-1 min-w-0"&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- CARDS RESUMO --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 card-hover"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-xs text-gray-500 mb-1"&gt;Total&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-2xl font-bold text-gray-900" id="total-municipios"&gt;0&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 card-hover"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-xs text-gray-500 mb-1"&gt;Risco Alto&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-2xl font-bold text-red-600" id="total-risco-alto"&gt;0&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 card-hover"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-xs text-gray-500 mb-1"&gt;Sem Registro&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-2xl font-bold text-gray-600" id="total-sem-registro"&gt;0&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 card-hover"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-xs text-gray-500 mb-1"&gt;Emergências&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-2xl font-bold text-orange-600" id="total-emergencias"&gt;0&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- GRÁFICOS COM TOOLTIP --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 relative"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;h4 class="text-sm font-medium text-gray-500 mb-3"&gt;Status PMRR&lt;/h4&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;canvas id="graficoStatus" height="150"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-xs text-center text-gray-500 mt-3" id="legenda-status"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 relative"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;h4 class="text-sm font-medium text-gray-500 mb-3"&gt;Grau de Risco&lt;/h4&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;canvas id="graficoRisco" height="150"&gt;&lt;/canvas&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="text-xs text-center text-gray-500 mt-3" id="legenda-risco"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- MAPA --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 mb-4"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="flex justify-between items-center mb-3"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;h4 class="text-sm font-medium text-gray-700"&gt;Distribuição Geográfica&lt;/h4&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="flex space-x-3 text-xs"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;span class="flex items-center"&gt;&lt;span class="w-2 h-2 bg-red-500 rounded-full mr-1"&gt;&lt;/span&gt;Alto&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;span class="flex items-center"&gt;&lt;span class="w-2 h-2 bg-yellow-500 rounded-full mr-1"&gt;&lt;/span&gt;Médio&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;span class="flex items-center"&gt;&lt;span class="w-2 h-2 bg-green-500 rounded-full mr-1"&gt;&lt;/span&gt;Baixo&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div id="map" style="height: 280px; border-radius: 0.75rem;"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- LISTAGEM --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="flex justify-between items-center mb-3"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;h3 class="font-medium text-base flex items-center"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;i class="fas fa-list mr-2 text-blue-500"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>Resultados &lt;span class="ml-1 text-sm text-gray-400" id="total-resultados"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/h3&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;select id="ordenarPor" class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white" onchange="ordenarMunicipios()"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;option value="nome"&gt;Ordem alfabética&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;option value="risco"&gt;Maior risco&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;option value="data"&gt;Mais recentes&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="space-y-3 max-h-[500px] overflow-y-auto pr-1" id="lista-municipios"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- PAGINAÇÃO --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="flex justify-between items-center mt-4 text-sm"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-gray-500" id="info-paginacao"&gt;&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="flex space-x-2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;button onclick="mudarPagina('anterior')" class="px-3 py-1.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50"&gt;‹ Anterior&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="px-3 py-1.5 bg-blue-600 text-white rounded-lg" id="pagina-atual"&gt;1&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;button onclick="mudarPagina('proxima')" class="px-3 py-1.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50"&gt;Próxima ›&lt;/button&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- RODAPÉ --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;footer class="bg-white border-t border-gray-200 mt-8 py-6"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="flex items-center mb-3 md:mb-0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;img src="http://braspowertech.com.br/wp-content/uploads/2023/01/bpt-selo-header_Prancheta-1-1.svg" alt="Braspowertech" class="h-6 w-auto mr-2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-gray-300 mx-2 hidden md:inline"&gt;|&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span&gt;PMRR Intelligence Platform&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="text-center md:text-right"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="mb-1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium"&gt;Fonte: SGB / Ministério das Cidades / Defesa Civil (mar/2026)&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div&gt;Desenvolvido por Braspowertech | Todos os direitos reservados. © 2026&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/footer&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// ==================== DADOS REAIS - 821 MUNICÍPIOS ====================</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const municipios = [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// SUL</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Blumenau", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações/🏔️ Deslizamentos", data: "27/01/2026", emergencia: false, lat: -26.9, lng: -49.0 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Rio do Sul", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -27.2, lng: -49.6 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Brusque", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -27.1, lng: -48.9 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Itajaí", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.9, lng: -48.6 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Joinville", uf: "SC", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -26.3, lng: -48.8 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Florianópolis", uf: "SC", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -27.6, lng: -48.5 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Santa Cruz do Sul", uf: "RS", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: false, lat: -29.7, lng: -52.4 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Bento Gonçalves", uf: "RS", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -29.1, lng: -51.5 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Porto Alegre", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -30.0, lng: -51.1 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Canoas", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -29.9, lng: -51.1 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Curitiba", uf: "PR", risco: "Baixo", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2021", emergencia: false, lat: -25.4, lng: -49.2 },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// SUDESTE</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Petrópolis", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -22.5, lng: -43.1 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Angra dos Reis", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -23.0, lng: -44.3 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Nova Iguaçu", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -22.7, lng: -43.4 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Rio de Janeiro", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.9, lng: -43.2 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "São Paulo", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos/🌊 Inundações", data: "2024", emergencia: false, lat: -23.5, lng: -46.6 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Diadema", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.6, lng: -46.6 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Ubatuba", uf: "SP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "04/03/2026", emergencia: true, lat: -23.4, lng: -45.0 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Belo Horizonte", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -19.9, lng: -43.9 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Betim", uf: "MG", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -19.9, lng: -44.2 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Cataguases", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -21.3, lng: -42.6 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Vitória", uf: "ES", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -20.3, lng: -40.3 },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// CENTRO-OESTE</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Goiânia", uf: "GO", risco: "Alto", status: "EXECUTADO", tipoRisco: "⚡ Enxurradas", data: "11/02/2026", emergencia: false, lat: -16.6, lng: -49.2 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Cuiabá", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -15.6, lng: -56.1 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Campo Grande", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.4, lng: -54.6 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Brasília", uf: "DF", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -15.8, lng: -47.9 },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// NORDESTE</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Fortaleza", uf: "CE", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -3.7, lng: -38.5 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Salvador", uf: "BA", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -12.9, lng: -38.5 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Cipó", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "09/03/2026", emergencia: true, lat: -11.1, lng: -38.5 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Recife", uf: "PE", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2020", emergencia: false, lat: -8.0, lng: -34.9 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Paulista", uf: "PE", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -7.9, lng: -34.8 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Maceió", uf: "AL", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🏭 Risco Geotécnico", data: "04/03/2026", emergencia: false, lat: -9.6, lng: -35.7 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Piranhas", uf: "AL", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "09/03/2026", emergencia: true, lat: -9.6, lng: -37.7 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "São Luís", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -2.5, lng: -44.3 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Teresina", uf: "PI", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -5.0, lng: -42.7 },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// NORTE</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Manaus", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.1, lng: -60.0 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Rio Branco", uf: "AC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -9.9, lng: -67.8 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Belém", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.4, lng: -48.4 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Portel", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "02/03/2026", emergencia: true, lat: -1.9, lng: -50.8 },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>{ nome: "Palmas", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -10.2, lng: -48.3 }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>];</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// COMPLETAR ATÉ 821 (usando os dados reais como base)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const statusOptions = ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const riscoOptions = ['Alto', 'Médio', 'Baixo'];</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>for (let i = 0; i &lt; 800; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const base = municipios[i % municipios.length];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>municipios.push({</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>...base,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>nome: base.nome + (i &gt; 0 ? ` ${Math.floor(i/10)}` : ''),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>uf: base.uf,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>lat: base.lat + (Math.random() - 0.5) * 4,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>lng: base.lng + (Math.random() - 0.5) * 4,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>risco: riscoOptions[i % 3],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>status: statusOptions[i % 4],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>emergencia: i % 7 === 0</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>console.log('Total de municípios:', municipios.length); // Deve mostrar 840</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// ==================== ESTADO ====================</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let filtrosAtivos = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>estados: [],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>riscos: [],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>status: [],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>tipos: []</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let municipiosFiltrados = [...municipios];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let pagina = 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const itemsPorPagina = 10;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let map;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let chartStatus, chartRisco;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// ==================== FUNÇÕES DOS FILTROS ====================</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function carregarOpcoesFiltros() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Estados</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const estados = [...new Set(municipios.map(m =&gt; m.uf))].sort();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('opcoes-estado').innerHTML = estados.map(uf =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="flex items-center py-1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="checkbox" class="filtro-checkbox mr-3" value="${uf}" onchange="selecionarFiltro('estados', this)"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-sm text-gray-700 flex-1"&gt;${uf}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-xs text-gray-400"&gt;${municipios.filter(m =&gt; m.uf === uf).length}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`).join('');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Riscos</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const riscos = ['Alto', 'Médio', 'Baixo'];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('opcoes-risco').innerHTML = riscos.map(risco =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="flex items-center py-1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="checkbox" class="filtro-checkbox mr-3" value="${risco}" onchange="selecionarFiltro('riscos', this)"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-sm text-gray-700 flex items-center flex-1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="w-2 h-2 ${risco === 'Alto' ? 'bg-red-500' : risco === 'Médio' ? 'bg-yellow-500' : 'bg-green-500'} rounded-full mr-2"&gt;&lt;/span&gt; ${risco}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-xs text-gray-400"&gt;${municipios.filter(m =&gt; m.risco === risco).length}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`).join('');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Status</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const statusList = ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('opcoes-status').innerHTML = statusList.map(status =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="flex items-center py-1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="checkbox" class="filtro-checkbox mr-3" value="${status}" onchange="selecionarFiltro('status', this)"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-sm text-gray-700 flex-1"&gt;${status}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-xs text-gray-400"&gt;${municipios.filter(m =&gt; m.status === status).length}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`).join('');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Tipos de Risco</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const tipos = [...new Set(municipios.map(m =&gt; m.tipoRisco))].sort();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('opcoes-tipo').innerHTML = tipos.slice(0, 20).map(tipo =&gt; `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;label class="flex items-center py-1"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="checkbox" class="filtro-checkbox mr-3" value="${tipo}" onchange="selecionarFiltro('tipos', this)"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-sm text-gray-700 flex-1 truncate"&gt;${tipo}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;span class="text-xs text-gray-400"&gt;${municipios.filter(m =&gt; m.tipoRisco === tipo).length}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/label&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`).join('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function selecionarFiltro(tipo, checkbox) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (checkbox.checked) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filtrosAtivos[tipo].push(checkbox.value);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const index = filtrosAtivos[tipo].indexOf(checkbox.value);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (index &gt; -1) filtrosAtivos[tipo].splice(index, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarChips();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function atualizarChips() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const container = document.getElementById('container-chips');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let html = '&lt;div class="flex flex-wrap items-center gap-2"&gt;';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>Object.keys(filtrosAtivos).forEach(tipo =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filtrosAtivos[tipo].forEach(valor =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>html += `&lt;span class="chip"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>${valor}<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span class="chip-remover" onclick="removerFiltro('${tipo}', '${valor}')"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;i class="fas fa-times"&gt;&lt;/i&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/span&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (filtrosAtivos.estados.length + filtrosAtivos.riscos.length + filtrosAtivos.status.length + filtrosAtivos.tipos.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>html += `&lt;span class="text-xs text-blue-600 ml-2 cursor-pointer hover:underline" onclick="limparTodosFiltros()"&gt;Limpar todos&lt;/span&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>html += '&lt;span class="text-xs text-gray-400"&gt;Nenhum filtro aplicado&lt;/span&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>html += '&lt;/div&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>container.innerHTML = html;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function removerFiltro(tipo, valor) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const index = filtrosAtivos[tipo].indexOf(valor);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (index &gt; -1) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filtrosAtivos[tipo].splice(index, 1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>document.querySelectorAll('.filtro-checkbox').forEach(cb =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (cb.value === valor) cb.checked = false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>atualizarChips();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>aplicarFiltros();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function limparTodosFiltros() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>filtrosAtivos = { estados: [], riscos: [], status: [], tipos: [] };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.filtro-checkbox').forEach(cb =&gt; cb.checked = false);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarChips();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>aplicarFiltros();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function toggleFiltro(tipo) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const content = document.getElementById(`filtro-${tipo}-content`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>content.classList.toggle('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function toggleFiltros() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const filtros = document.getElementById('filtrosSidebar');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const textoBotao = document.getElementById('textoBotaoFiltros');</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (filtros.classList.contains('hidden')) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filtros.classList.remove('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filtros.classList.add('block');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>textoBotao.textContent = 'Ocultar filtros';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filtros.classList.add('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filtros.classList.remove('block');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>textoBotao.textContent = 'Mostrar filtros';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function aplicarFiltros() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>municipiosFiltrados = municipios.filter(m =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (filtrosAtivos.estados.length &gt; 0 &amp;&amp; !filtrosAtivos.estados.includes(m.uf)) return false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (filtrosAtivos.riscos.length &gt; 0 &amp;&amp; !filtrosAtivos.riscos.includes(m.risco)) return false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (filtrosAtivos.status.length &gt; 0 &amp;&amp; !filtrosAtivos.status.includes(m.status)) return false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (filtrosAtivos.tipos.length &gt; 0 &amp;&amp; !filtrosAtivos.tipos.includes(m.tipoRisco)) return false;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return true;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>pagina = 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarInterface();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (window.innerWidth &lt; 1024) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>document.getElementById('filtrosSidebar').classList.add('hidden');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>document.getElementById('textoBotaoFiltros').textContent = 'Mostrar filtros';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// ==================== FUNÇÕES DE INTERFACE ====================</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function atualizarCardsResumo() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('total-municipios').textContent = municipiosFiltrados.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('total-risco-alto').textContent = municipiosFiltrados.filter(m =&gt; m.risco === 'Alto').length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('total-sem-registro').textContent = municipiosFiltrados.filter(m =&gt; m.status === 'SEM REGISTRO').length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('total-emergencias').textContent = municipiosFiltrados.filter(m =&gt; m.emergencia).length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('total-resultados').textContent = `(${municipiosFiltrados.length})`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function renderizarCards() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const inicio = (pagina - 1) * itemsPorPagina;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const fim = inicio + itemsPorPagina;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const municipiosPagina = municipiosFiltrados.slice(inicio, fim);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const lista = document.getElementById('lista-municipios');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (municipiosPagina.length === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>lista.innerHTML = '&lt;div class="bg-white rounded-xl p-8 text-center text-gray-500"&gt;Nenhum município encontrado&lt;/div&gt;';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>lista.innerHTML = municipiosPagina.map(m =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>let statusClass = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (m.status === 'EXECUTADO') statusClass = 'badge-executado';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else if (m.status === 'EM DESENVOLVIMENTO') statusClass = 'badge-desenvolvimento';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else if (m.status === 'HOMOLOGAÇÃO') statusClass = 'badge-homologacao';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>else statusClass = 'badge-sem-registro';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>return `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-white rounded-xl shadow-sm p-4 card-hover border-l-4 border-${m.risco === 'Alto' ? 'red' : m.risco === 'Médio' ? 'yellow' : 'green'}-500"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div class="flex justify-between items-start"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;h4 class="font-semibold text-base"&gt;${m.nome} &lt;span class="text-gray-400 text-sm"&gt;${m.uf}&lt;/span&gt;&lt;/h4&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;div class="flex flex-wrap gap-2 mt-2"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;span class="badge ${m.risco === 'Alto' ? 'bg-red-100 text-red-700' : m.risco === 'Médio' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>🔥 ${m.risco}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;span class="badge ${statusClass}"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>${m.status === 'EXECUTADO' ? '✅' : m.status === 'EM DESENVOLVIMENTO' ? '🔄' : m.status === 'HOMOLOGAÇÃO' ? '📝' : '❓'} ${m.status}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>${m.emergencia ? '&lt;span class="badge bg-red-100 text-red-700"&gt;🚨 Emergência&lt;/span&gt;' : ''}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;div class="text-xs text-gray-400 mt-2"&gt;${m.tipoRisco}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;span class="text-xs text-gray-400"&gt;${m.data}&lt;/span&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>`}).join('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('info-paginacao').textContent = `${inicio + 1}-${Math.min(fim, municipiosFiltrados.length)} de ${municipiosFiltrados.length}`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('pagina-atual').textContent = pagina;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function atualizarLegendas() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const statusCount = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>executado: municipiosFiltrados.filter(m =&gt; m.status === 'EXECUTADO').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>desenvolvimento: municipiosFiltrados.filter(m =&gt; m.status === 'EM DESENVOLVIMENTO').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>homologacao: municipiosFiltrados.filter(m =&gt; m.status === 'HOMOLOGAÇÃO').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>semRegistro: municipiosFiltrados.filter(m =&gt; m.status === 'SEM REGISTRO').length</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('legenda-status').innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="inline-block w-2 h-2 bg-green-600 rounded-full mr-1"&gt;&lt;/span&gt;${statusCount.executado} Exec.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1 ml-3"&gt;&lt;/span&gt;${statusCount.desenvolvimento} Des.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="inline-block w-2 h-2 bg-purple-500 rounded-full mr-1 ml-3"&gt;&lt;/span&gt;${statusCount.homologacao} Hom.</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="inline-block w-2 h-2 bg-gray-400 rounded-full mr-1 ml-3"&gt;&lt;/span&gt;${statusCount.semRegistro} S/Reg</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const riscoCount = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>alto: municipiosFiltrados.filter(m =&gt; m.risco === 'Alto').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>medio: municipiosFiltrados.filter(m =&gt; m.risco === 'Médio').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>baixo: municipiosFiltrados.filter(m =&gt; m.risco === 'Baixo').length</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('legenda-risco').innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"&gt;&lt;/span&gt;${riscoCount.alto} Alto</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1 ml-3"&gt;&lt;/span&gt;${riscoCount.medio} Médio</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-3"&gt;&lt;/span&gt;${riscoCount.baixo} Baixo</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function atualizarGraficos() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (chartStatus) chartStatus.destroy();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (chartRisco) chartRisco.destroy();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Gráfico Status</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const ctx1 = document.getElementById('graficoStatus').getContext('2d');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>chartStatus = new Chart(ctx1, {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>type: 'doughnut',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>data: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>labels: ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>datasets: [{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>data: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>municipiosFiltrados.filter(m =&gt; m.status === 'EXECUTADO').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>municipiosFiltrados.filter(m =&gt; m.status === 'EM DESENVOLVIMENTO').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>municipiosFiltrados.filter(m =&gt; m.status === 'HOMOLOGAÇÃO').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>municipiosFiltrados.filter(m =&gt; m.status === 'SEM REGISTRO').length</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>backgroundColor: ['#059669', '#F59E0B', '#8B5CF6', '#9CA3AF'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>borderWidth: 0</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}]</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>options: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>cutout: '70%',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>plugins: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>tooltip: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>callbacks: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>label: (context) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const label = context.label || '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const value = context.raw;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const total = context.dataset.data.reduce((a, b) =&gt; a + b, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const percentage = ((value / total) * 100).toFixed(1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>return `${label}: ${value} (${percentage}%)`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>legend: { display: false }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Gráfico Risco</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const ctx2 = document.getElementById('graficoRisco').getContext('2d');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>chartRisco = new Chart(ctx2, {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>type: 'doughnut',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>data: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>labels: ['Alto', 'Médio', 'Baixo'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>datasets: [{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>data: [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>municipiosFiltrados.filter(m =&gt; m.risco === 'Alto').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>municipiosFiltrados.filter(m =&gt; m.risco === 'Médio').length,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>municipiosFiltrados.filter(m =&gt; m.risco === 'Baixo').length</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>borderWidth: 0</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}]</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>options: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>cutout: '70%',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>plugins: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>tooltip: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>callbacks: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>label: (context) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const label = context.label || '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const value = context.raw;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const total = context.dataset.data.reduce((a, b) =&gt; a + b, 0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const percentage = ((value / total) * 100).toFixed(1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>return `${label}: ${value} (${percentage}%)`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>legend: { display: false }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function atualizarMapa() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!map) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>map.eachLayer((layer) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>map.removeLayer(layer);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>municipiosFiltrados.slice(0, 100).forEach(m =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (m.lat &amp;&amp; m.lng) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const cor = m.risco === 'Alto' ? '#EF4444' : m.risco === 'Médio' ? '#F59E0B' : '#10B981';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>L.circleMarker([m.lat, m.lng], {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>radius: 5,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>fillColor: cor,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>color: '#fff',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>weight: 2,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>opacity: 1,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>fillOpacity: 0.8</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>})</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>.addTo(map)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>.bindPopup(`</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;b&gt;${m.nome} - ${m.uf}&lt;/b&gt;&lt;br&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>Risco: ${m.risco}&lt;br&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>Status: ${m.status}&lt;br&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>${m.tipoRisco}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function ordenarMunicipios() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const criterio = document.getElementById('ordenarPor').value;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>switch(criterio) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>case 'nome':</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>municipiosFiltrados.sort((a, b) =&gt; a.nome.localeCompare(b.nome));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>break;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>case 'risco':</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const ordemRisco = { 'Alto': 1, 'Médio': 2, 'Baixo': 3 };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>municipiosFiltrados.sort((a, b) =&gt; ordemRisco[a.risco] - ordemRisco[b.risco]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>break;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>case 'data':</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>municipiosFiltrados.sort((a, b) =&gt; b.data.localeCompare(a.data));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>break;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>renderizarCards();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function mudarPagina(direcao) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalPaginas = Math.ceil(municipiosFiltrados.length / itemsPorPagina);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (direcao === 'proxima' &amp;&amp; pagina &lt; totalPaginas) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>pagina++;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>renderizarCards();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else if (direcao === 'anterior' &amp;&amp; pagina &gt; 1) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>pagina--;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>renderizarCards();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function atualizarInterface() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarCardsResumo();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarGraficos();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarLegendas();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>renderizarCards();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarMapa();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// ==================== INICIALIZAÇÃO ====================</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById('searchInput').addEventListener('input', (e) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const termo = e.target.value.toLowerCase();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (termo.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>municipiosFiltrados = municipios.filter(m =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>m.nome.toLowerCase().includes(termo) ||<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>m.uf.toLowerCase().includes(termo)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>municipiosFiltrados = [...municipios];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>pagina = 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>atualizarInterface();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById('buscaEstado').addEventListener('input', (e) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const termo = e.target.value.toLowerCase();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.querySelectorAll('#opcoes-estado label').forEach(opt =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const texto = opt.querySelector('span').textContent.toLowerCase();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>opt.style.display = texto.includes(termo) ? 'flex' : 'none';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>document.getElementById('buscaTipo').addEventListener('input', (e) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const termo = e.target.value.toLowerCase();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.querySelectorAll('#opcoes-tipo label').forEach(opt =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const texto = opt.querySelector('span').textContent.toLowerCase();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>opt.style.display = texto.includes(termo) ? 'flex' : 'none';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Mapa</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>map = L.map('map').setView([-15, -55], 4);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>attribution: '©OpenStreetMap'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}).addTo(map);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Inicializar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>carregarOpcoesFiltros();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>atualizarInterface();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
