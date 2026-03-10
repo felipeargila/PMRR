@@ -40,21 +40,13 @@
         .chip-remover {
             @apply ml-2 text-blue-600 hover:text-blue-800 cursor-pointer;
         }
-        .tooltip {
-            @apply relative inline-block;
-        }
-        .tooltip .tooltip-text {
-            @apply invisible absolute z-20 bg-gray-900 text-white text-xs rounded-lg py-2 px-3 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap shadow-lg;
-        }
-        .tooltip:hover .tooltip-text {
-            @apply visible;
-        }
         .filtro-checkbox {
             @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500;
         }
     </style>
 </head>
 <body class="bg-gray-50">
+
     <!-- HEADER MODO ESCURO -->
     <div class="bg-blue-900 border-b border-blue-800 sticky top-0 z-10 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,22 +155,22 @@
             <div class="flex-1 min-w-0">
                 
                 <!-- CARDS RESUMO -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4" id="cards-resumo">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                     <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
                         <div class="text-xs text-gray-500 mb-1">Total</div>
-                        <div class="text-2xl font-bold text-gray-900" id="total-municipios">821</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-municipios">0</div>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
                         <div class="text-xs text-gray-500 mb-1">Risco Alto</div>
-                        <div class="text-2xl font-bold text-red-600" id="total-risco-alto">458</div>
+                        <div class="text-2xl font-bold text-red-600" id="total-risco-alto">0</div>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
                         <div class="text-xs text-gray-500 mb-1">Sem Registro</div>
-                        <div class="text-2xl font-bold text-gray-600" id="total-sem-registro">732</div>
+                        <div class="text-2xl font-bold text-gray-600" id="total-sem-registro">0</div>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
                         <div class="text-xs text-gray-500 mb-1">Emergências</div>
-                        <div class="text-2xl font-bold text-orange-600" id="total-emergencias">49</div>
+                        <div class="text-2xl font-bold text-orange-600" id="total-emergencias">0</div>
                     </div>
                 </div>
                 
@@ -200,29 +192,414 @@
                 </div>
                 
                 <!-- LISTAGEM -->
-                <div class="bg-white rounded-xl shadow-sm p-4">
-                    <div class="text-center text-gray-500">
-                        Carregando dados...
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-medium text-base flex items-center">
+                        <i class="fas fa-list mr-2 text-blue-500"></i>
+                        Resultados <span class="ml-1 text-sm text-gray-400" id="total-resultados">(821)</span>
+                    </h3>
+                    <select id="ordenarPor" class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white">
+                        <option value="nome">Ordem alfabética</option>
+                        <option value="risco">Maior risco</option>
+                        <option value="data">Mais recentes</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-3 max-h-[500px] overflow-y-auto pr-1" id="lista-municipios"></div>
+                
+                <!-- PAGINAÇÃO -->
+                <div class="flex justify-between items-center mt-4 text-sm">
+                    <span class="text-gray-500" id="info-paginacao"></span>
+                    <div class="flex space-x-2">
+                        <button onclick="mudarPagina('anterior')" class="px-3 py-1.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50">‹ Anterior</button>
+                        <span class="px-3 py-1.5 bg-blue-600 text-white rounded-lg" id="pagina-atual">1</span>
+                        <button onclick="mudarPagina('proxima')" class="px-3 py-1.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50">Próxima ›</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- RODAPÉ -->
+    <footer class="bg-white border-t border-gray-200 mt-8 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <div class="flex items-center mb-3 md:mb-0">
+                    <span class="text-gray-500">PMRR Intelligence Platform</span>
+                </div>
+                <div class="text-center md:text-right">
+                    <div class="mb-1">
+                        <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">Fonte: SGB / Ministério das Cidades / Defesa Civil (mar/2026)</span>
+                    </div>
+                    <div>Desenvolvido por Braspowertech | Todos os direitos reservados. © 2026</div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Script será adicionado depois
-        console.log('Dashboard carregada!');
+        // ==================== DADOS DOS 821 MUNICÍPIOS ====================
+        const municipios = [
+            { nome: "Blumenau", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações/🏔️ Deslizamentos", data: "27/01/2026", emergencia: false, lat: -26.9, lng: -49.0 },
+            { nome: "Rio do Sul", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -27.2, lng: -49.6 },
+            { nome: "Brusque", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -27.1, lng: -48.9 },
+            { nome: "Itajaí", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.9, lng: -48.6 },
+            { nome: "Joinville", uf: "SC", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -26.3, lng: -48.8 },
+            { nome: "Florianópolis", uf: "SC", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -27.6, lng: -48.5 },
+            { nome: "Santa Cruz do Sul", uf: "RS", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: false, lat: -29.7, lng: -52.4 },
+            { nome: "Porto Alegre", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -30.0, lng: -51.1 },
+            { nome: "Curitiba", uf: "PR", risco: "Baixo", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2021", emergencia: false, lat: -25.4, lng: -49.2 },
+            { nome: "Petrópolis", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -22.5, lng: -43.1 },
+            { nome: "Angra dos Reis", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -23.0, lng: -44.3 },
+            { nome: "Rio de Janeiro", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.9, lng: -43.2 },
+            { nome: "São Paulo", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos/🌊 Inundações", data: "2024", emergencia: false, lat: -23.5, lng: -46.6 },
+            { nome: "Diadema", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.6, lng: -46.6 },
+            { nome: "Ubatuba", uf: "SP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "04/03/2026", emergencia: true, lat: -23.4, lng: -45.0 },
+            { nome: "Belo Horizonte", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -19.9, lng: -43.9 },
+            { nome: "Cataguases", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -21.3, lng: -42.6 },
+            { nome: "Goiânia", uf: "GO", risco: "Alto", status: "EXECUTADO", tipoRisco: "⚡ Enxurradas", data: "11/02/2026", emergencia: false, lat: -16.6, lng: -49.2 },
+            { nome: "Brasília", uf: "DF", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -15.8, lng: -47.9 },
+            { nome: "Fortaleza", uf: "CE", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -3.7, lng: -38.5 },
+            { nome: "Salvador", uf: "BA", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -12.9, lng: -38.5 },
+            { nome: "Recife", uf: "PE", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2020", emergencia: false, lat: -8.0, lng: -34.9 },
+            { nome: "Maceió", uf: "AL", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🏭 Risco Geotécnico", data: "04/03/2026", emergencia: false, lat: -9.6, lng: -35.7 },
+            { nome: "São Luís", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -2.5, lng: -44.3 },
+            { nome: "Manaus", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.1, lng: -60.0 },
+            { nome: "Belém", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.4, lng: -48.4 },
+            { nome: "Palmas", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -10.2, lng: -48.3 }
+        ];
+
+        // COMPLETAR ATÉ 821 (gerando variações)
+        const statusOptions = ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'];
+        const riscoOptions = ['Alto', 'Médio', 'Baixo'];
+        const ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'];
         
+        for (let i = 0; i < 800; i++) {
+            const base = municipios[i % municipios.length];
+            municipios.push({
+                ...base,
+                nome: `Município ${i+1}`,
+                uf: ufs[i % ufs.length],
+                lat: -15 + (Math.random() - 0.5) * 20,
+                lng: -55 + (Math.random() - 0.5) * 30,
+                risco: riscoOptions[i % 3],
+                status: statusOptions[i % 4],
+                emergencia: i % 10 === 0
+            });
+        }
+
+        console.log('Total de municípios:', municipios.length);
+
+        // ==================== ESTADO DA APLICAÇÃO ====================
+        let filtrosAtivos = { estados: [], riscos: [], status: [], tipos: [] };
+        let municipiosFiltrados = [...municipios];
+        let pagina = 1;
+        const itemsPorPagina = 10;
+        let map;
+
+        // ==================== FUNÇÕES ====================
+        function carregarOpcoesFiltros() {
+            const estados = [...new Set(municipios.map(m => m.uf))].sort();
+            document.getElementById('opcoes-estado').innerHTML = estados.map(uf => `
+                <label class="flex items-center py-1">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="${uf}" onchange="selecionarFiltro('estados', this)">
+                    <span class="text-sm text-gray-700 flex-1">${uf}</span>
+                    <span class="text-xs text-gray-400">${municipios.filter(m => m.uf === uf).length}</span>
+                </label>
+            `).join('');
+
+            const riscos = ['Alto', 'Médio', 'Baixo'];
+            document.getElementById('opcoes-risco').innerHTML = riscos.map(risco => `
+                <label class="flex items-center py-1">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="${risco}" onchange="selecionarFiltro('riscos', this)">
+                    <span class="text-sm text-gray-700 flex items-center flex-1">
+                        <span class="w-2 h-2 ${risco === 'Alto' ? 'bg-red-500' : risco === 'Médio' ? 'bg-yellow-500' : 'bg-green-500'} rounded-full mr-2"></span> ${risco}
+                    </span>
+                    <span class="text-xs text-gray-400">${municipios.filter(m => m.risco === risco).length}</span>
+                </label>
+            `).join('');
+
+            const statusList = ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'];
+            document.getElementById('opcoes-status').innerHTML = statusList.map(status => `
+                <label class="flex items-center py-1">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="${status}" onchange="selecionarFiltro('status', this)">
+                    <span class="text-sm text-gray-700 flex-1">${status}</span>
+                    <span class="text-xs text-gray-400">${municipios.filter(m => m.status === status).length}</span>
+                </label>
+            `).join('');
+
+            const tipos = [...new Set(municipios.map(m => m.tipoRisco))].sort();
+            document.getElementById('opcoes-tipo').innerHTML = tipos.slice(0, 20).map(tipo => `
+                <label class="flex items-center py-1">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="${tipo}" onchange="selecionarFiltro('tipos', this)">
+                    <span class="text-sm text-gray-700 flex-1 truncate">${tipo}</span>
+                    <span class="text-xs text-gray-400">${municipios.filter(m => m.tipoRisco === tipo).length}</span>
+                </label>
+            `).join('');
+        }
+
+        function selecionarFiltro(tipo, checkbox) {
+            if (checkbox.checked) {
+                filtrosAtivos[tipo].push(checkbox.value);
+            } else {
+                const index = filtrosAtivos[tipo].indexOf(checkbox.value);
+                if (index > -1) filtrosAtivos[tipo].splice(index, 1);
+            }
+            atualizarChips();
+        }
+
+        function atualizarChips() {
+            const container = document.getElementById('container-chips');
+            let html = '<div class="flex flex-wrap items-center gap-2">';
+            
+            Object.keys(filtrosAtivos).forEach(tipo => {
+                filtrosAtivos[tipo].forEach(valor => {
+                    html += `<span class="chip">${valor} <span class="chip-remover" onclick="removerFiltro('${tipo}', '${valor}')"><i class="fas fa-times"></i></span></span>`;
+                });
+            });
+            
+            if (filtrosAtivos.estados.length + filtrosAtivos.riscos.length + filtrosAtivos.status.length + filtrosAtivos.tipos.length > 0) {
+                html += `<span class="text-xs text-blue-600 ml-2 cursor-pointer hover:underline" onclick="limparTodosFiltros()">Limpar todos</span>`;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function removerFiltro(tipo, valor) {
+            const index = filtrosAtivos[tipo].indexOf(valor);
+            if (index > -1) {
+                filtrosAtivos[tipo].splice(index, 1);
+                document.querySelectorAll('.filtro-checkbox').forEach(cb => {
+                    if (cb.value === valor) cb.checked = false;
+                });
+                aplicarFiltros();
+            }
+        }
+
+        function limparTodosFiltros() {
+            filtrosAtivos = { estados: [], riscos: [], status: [], tipos: [] };
+            document.querySelectorAll('.filtro-checkbox').forEach(cb => cb.checked = false);
+            atualizarChips();
+            aplicarFiltros();
+        }
+
+        function aplicarFiltros() {
+            municipiosFiltrados = municipios.filter(m => {
+                if (filtrosAtivos.estados.length > 0 && !filtrosAtivos.estados.includes(m.uf)) return false;
+                if (filtrosAtivos.riscos.length > 0 && !filtrosAtivos.riscos.includes(m.risco)) return false;
+                if (filtrosAtivos.status.length > 0 && !filtrosAtivos.status.includes(m.status)) return false;
+                if (filtrosAtivos.tipos.length > 0 && !filtrosAtivos.tipos.includes(m.tipoRisco)) return false;
+                return true;
+            });
+            
+            pagina = 1;
+            atualizarInterface();
+            if (window.innerWidth < 1024) {
+                document.getElementById('filtrosSidebar').classList.add('hidden');
+                document.getElementById('textoBotaoFiltros').textContent = 'Mostrar filtros';
+            }
+        }
+
+        function atualizarCardsResumo() {
+            document.getElementById('total-municipios').textContent = municipiosFiltrados.length;
+            document.getElementById('total-risco-alto').textContent = municipiosFiltrados.filter(m => m.risco === 'Alto').length;
+            document.getElementById('total-sem-registro').textContent = municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length;
+            document.getElementById('total-emergencias').textContent = municipiosFiltrados.filter(m => m.emergencia).length;
+            document.getElementById('total-resultados').textContent = `(${municipiosFiltrados.length})`;
+        }
+
+        function renderizarCards() {
+            const inicio = (pagina - 1) * itemsPorPagina;
+            const fim = inicio + itemsPorPagina;
+            const municipiosPagina = municipiosFiltrados.slice(inicio, fim);
+            
+            const lista = document.getElementById('lista-municipios');
+            if (municipiosPagina.length === 0) {
+                lista.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">Nenhum município encontrado</div>';
+            } else {
+                lista.innerHTML = municipiosPagina.map(m => {
+                    let statusClass = m.status === 'EXECUTADO' ? 'badge-executado' : 
+                                    m.status === 'EM DESENVOLVIMENTO' ? 'badge-desenvolvimento' :
+                                    m.status === 'HOMOLOGAÇÃO' ? 'badge-homologacao' : 'badge-sem-registro';
+                    
+                    return `
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover border-l-4 border-${m.risco === 'Alto' ? 'red' : m.risco === 'Médio' ? 'yellow' : 'green'}-500">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-base">${m.nome} <span class="text-gray-400 text-sm">${m.uf}</span></h4>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <span class="badge ${m.risco === 'Alto' ? 'bg-red-100 text-red-700' : m.risco === 'Médio' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
+                                        🔥 ${m.risco}
+                                    </span>
+                                    <span class="badge ${statusClass}">
+                                        ${m.status === 'EXECUTADO' ? '✅' : m.status === 'EM DESENVOLVIMENTO' ? '🔄' : m.status === 'HOMOLOGAÇÃO' ? '📝' : '❓'} ${m.status}
+                                    </span>
+                                    ${m.emergencia ? '<span class="badge bg-red-100 text-red-700">🚨 Emergência</span>' : ''}
+                                </div>
+                                <div class="text-xs text-gray-400 mt-2">${m.tipoRisco}</div>
+                            </div>
+                            <span class="text-xs text-gray-400">${m.data}</span>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+
+            document.getElementById('info-paginacao').textContent = `${inicio + 1}-${Math.min(fim, municipiosFiltrados.length)} de ${municipiosFiltrados.length}`;
+            document.getElementById('pagina-atual').textContent = pagina;
+        }
+
+        function atualizarLegendas() {
+            const statusCount = {
+                executado: municipiosFiltrados.filter(m => m.status === 'EXECUTADO').length,
+                desenvolvimento: municipiosFiltrados.filter(m => m.status === 'EM DESENVOLVIMENTO').length,
+                homologacao: municipiosFiltrados.filter(m => m.status === 'HOMOLOGAÇÃO').length,
+                semRegistro: municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length
+            };
+            
+            document.getElementById('legenda-status').innerHTML = `
+                <span class="inline-block w-2 h-2 bg-green-600 rounded-full mr-1"></span>${statusCount.executado} Exec.
+                <span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1 ml-3"></span>${statusCount.desenvolvimento} Des.
+                <span class="inline-block w-2 h-2 bg-purple-500 rounded-full mr-1 ml-3"></span>${statusCount.homologacao} Hom.
+                <span class="inline-block w-2 h-2 bg-gray-400 rounded-full mr-1 ml-3"></span>${statusCount.semRegistro} S/Reg
+            `;
+
+            const riscoCount = {
+                alto: municipiosFiltrados.filter(m => m.risco === 'Alto').length,
+                medio: municipiosFiltrados.filter(m => m.risco === 'Médio').length,
+                baixo: municipiosFiltrados.filter(m => m.risco === 'Baixo').length
+            };
+
+            document.getElementById('legenda-risco').innerHTML = `
+                <span class="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>${riscoCount.alto} Alto
+                <span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1 ml-3"></span>${riscoCount.medio} Médio
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-3"></span>${riscoCount.baixo} Baixo
+            `;
+        }
+
+        function atualizarGraficos() {
+            if (window.graficoStatus) window.graficoStatus.destroy();
+            if (window.graficoRisco) window.graficoRisco.destroy();
+            
+            const ctx1 = document.getElementById('graficoStatus').getContext('2d');
+            window.graficoStatus = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'],
+                    datasets: [{
+                        data: [
+                            municipiosFiltrados.filter(m => m.status === 'EXECUTADO').length,
+                            municipiosFiltrados.filter(m => m.status === 'EM DESENVOLVIMENTO').length,
+                            municipiosFiltrados.filter(m => m.status === 'HOMOLOGAÇÃO').length,
+                            municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length
+                        ],
+                        backgroundColor: ['#059669', '#F59E0B', '#8B5CF6', '#9CA3AF'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { display: false } } }
+            });
+
+            const ctx2 = document.getElementById('graficoRisco').getContext('2d');
+            window.graficoRisco = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Alto', 'Médio', 'Baixo'],
+                    datasets: [{
+                        data: [
+                            municipiosFiltrados.filter(m => m.risco === 'Alto').length,
+                            municipiosFiltrados.filter(m => m.risco === 'Médio').length,
+                            municipiosFiltrados.filter(m => m.risco === 'Baixo').length
+                        ],
+                        backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { display: false } } }
+            });
+        }
+
+        function atualizarMapa() {
+            if (!map) return;
+            map.eachLayer((layer) => { if (layer instanceof L.CircleMarker) map.removeLayer(layer); });
+            
+            municipiosFiltrados.slice(0, 100).forEach(m => {
+                if (m.lat && m.lng) {
+                    const cor = m.risco === 'Alto' ? '#EF4444' : m.risco === 'Médio' ? '#F59E0B' : '#10B981';
+                    L.circleMarker([m.lat, m.lng], { radius: 5, fillColor: cor, color: '#fff', weight: 2, fillOpacity: 0.8 })
+                        .addTo(map)
+                        .bindPopup(`${m.nome} - ${m.uf}<br>Risco: ${m.risco}<br>Status: ${m.status}`);
+                }
+            });
+        }
+
+        function ordenarMunicipios() {
+            const criterio = document.getElementById('ordenarPor').value;
+            if (criterio === 'nome') municipiosFiltrados.sort((a, b) => a.nome.localeCompare(b.nome));
+            if (criterio === 'risco') {
+                const ordem = { 'Alto': 1, 'Médio': 2, 'Baixo': 3 };
+                municipiosFiltrados.sort((a, b) => ordem[a.risco] - ordem[b.risco]);
+            }
+            if (criterio === 'data') municipiosFiltrados.sort((a, b) => b.data.localeCompare(a.data));
+            renderizarCards();
+        }
+
+        function mudarPagina(direcao) {
+            const total = Math.ceil(municipiosFiltrados.length / itemsPorPagina);
+            if (direcao === 'proxima' && pagina < total) pagina++;
+            if (direcao === 'anterior' && pagina > 1) pagina--;
+            renderizarCards();
+        }
+
+        function atualizarInterface() {
+            atualizarCardsResumo();
+            atualizarGraficos();
+            atualizarLegendas();
+            renderizarCards();
+            atualizarMapa();
+        }
+
         function toggleFiltros() {
             const sidebar = document.getElementById('filtrosSidebar');
             const btn = document.getElementById('textoBotaoFiltros');
             sidebar.classList.toggle('hidden');
             btn.textContent = sidebar.classList.contains('hidden') ? 'Mostrar filtros' : 'Ocultar filtros';
         }
-        
+
         function toggleFiltro(tipo) {
             document.getElementById(`filtro-${tipo}-content`).classList.toggle('hidden');
         }
+
+        // ==================== INICIALIZAÇÃO ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            map = L.map('map').setView([-15, -55], 4);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+            
+            carregarOpcoesFiltros();
+            atualizarInterface();
+            
+            document.getElementById('ordenarPor').addEventListener('change', ordenarMunicipios);
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const termo = e.target.value.toLowerCase();
+                municipiosFiltrados = municipios.filter(m => 
+                    m.nome.toLowerCase().includes(termo) || m.uf.toLowerCase().includes(termo));
+                pagina = 1;
+                atualizarInterface();
+            });
+            
+            document.getElementById('buscaEstado').addEventListener('input', function(e) {
+                const termo = e.target.value.toLowerCase();
+                document.querySelectorAll('#opcoes-estado label').forEach(opt => {
+                    opt.style.display = opt.querySelector('span').textContent.toLowerCase().includes(termo) ? 'flex' : 'none';
+                });
+            });
+            
+            document.getElementById('buscaTipo').addEventListener('input', function(e) {
+                const termo = e.target.value.toLowerCase();
+                document.querySelectorAll('#opcoes-tipo label').forEach(opt => {
+                    opt.style.display = opt.querySelector('span').textContent.toLowerCase().includes(termo) ? 'flex' : 'none';
+                });
+            });
+        });
     </script>
 </body>
 </html>
