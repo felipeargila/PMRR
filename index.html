@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Braspowertech - Monitoramento PMRR</title>
+    <title>Braspowertech - Monitoramento PMRR (Perfil Ideal)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -44,7 +44,6 @@
             @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500;
         }
         
-        /* Tooltip personalizado - apenas para os status se necessário */
         .tooltip {
             @apply relative inline-block;
         }
@@ -54,20 +53,25 @@
         .tooltip:hover .tooltip-text {
             @apply visible;
         }
+
+        /* Score de oportunidade */
+        .score-alto { @apply bg-green-100 text-green-700; }
+        .score-medio { @apply bg-yellow-100 text-yellow-700; }
+        .score-baixo { @apply bg-red-100 text-red-700; }
     </style>
 </head>
 <body class="bg-gray-50">
 
-    <!-- HEADER MODO ESCURO - 3x MAIOR -->
+    <!-- HEADER MODO ESCURO -->
     <div class="bg-blue-900 border-b border-blue-800 sticky top-0 z-10 shadow-lg">
         <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
-            <div class="flex justify-between items-center h-32"> <!-- Header 3x maior -->
+            <div class="flex justify-between items-center h-32">
                 <div class="flex items-center">
-                    <!-- LOGO 3x MAIOR -->
-                    <img src="http://braspowertech.com.br/wp-content/uploads/2023/01/bpt-selo-header_Prancheta-1-1.svg" 
-                         alt="Braspowertech" 
-                         class="h-24 w-auto" <!-- Logo 3x maior -->
-                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 40\'%3E%3Cpath fill=\'%23FFFFFF\' d=\'M20 8L4 32h32L20 8z\'/%3E%3Ctext x=\'45\' y=\'25\' font-family=\'Arial\' font-size=\'20\' font-weight=\'bold\' fill=\'%23FFFFFF\'%3EBRASPOWERTECH%3C/text%3E%3C/svg%3E';">
+                    <svg width="180" height="60" viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg" class="h-20 w-auto">
+                        <path d="M20 8L4 32h32L20 8z" fill="#FBBF24"/>
+                        <text x="45" y="25" font-family="Arial" font-size="20" font-weight="bold" fill="white">BRASPOWER</text>
+                        <text x="45" y="42" font-family="Arial" font-size="14" fill="#FBBF24">TECH</text>
+                    </svg>
                     <span class="ml-4 bg-yellow-400 text-blue-900 text-base px-4 py-2 rounded-full font-bold">821 cidades</span>
                 </div>
                 <div class="flex items-center">
@@ -130,7 +134,7 @@
                     </div>
                 </div>
                 
-                <!-- FILTRO STATUS (SEM LEGENDA) -->
+                <!-- FILTRO STATUS -->
                 <div class="filtro-card">
                     <div class="filtro-header" onclick="toggleFiltro('status')">
                         <span><i class="fas fa-tag mr-2 text-purple-500"></i>Status PMRR</span>
@@ -138,6 +142,61 @@
                     </div>
                     <div id="filtro-status-content" class="filtro-content hidden">
                         <div id="opcoes-status" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- NOVO FILTRO: PORTE POPULACIONAL -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('porte')">
+                        <span><i class="fas fa-users mr-2 text-green-500"></i>Porte Populacional</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-porte-content" class="filtro-content hidden">
+                        <div id="opcoes-porte" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- NOVO FILTRO: PIB PER CAPITA -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('pib')">
+                        <span><i class="fas fa-chart-line mr-2 text-emerald-500"></i>PIB per capita</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-pib-content" class="filtro-content hidden">
+                        <div id="opcoes-pib" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- NOVO FILTRO: BIOMA -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('bioma')">
+                        <span><i class="fas fa-tree mr-2 text-green-600"></i>Bioma</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-bioma-content" class="filtro-content hidden">
+                        <div id="opcoes-bioma" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- NOVO FILTRO: PRESENÇA DE BARRAGENS -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('barragem')">
+                        <span><i class="fas fa-water mr-2 text-blue-500"></i>Barragens</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-barragem-content" class="filtro-content hidden">
+                        <div id="opcoes-barragem" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- NOVO FILTRO: DEFESA CIVIL ATIVA -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('defesaCivil')">
+                        <span><i class="fas fa-shield-alt mr-2 text-red-500"></i>Defesa Civil Ativa</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-defesaCivil-content" class="filtro-content hidden">
+                        <div id="opcoes-defesaCivil" class="space-y-2"></div>
                     </div>
                 </div>
                 
@@ -167,8 +226,8 @@
             <!-- CONTEÚDO PRINCIPAL -->
             <div class="flex-1 min-w-0">
                 
-                <!-- CARDS RESUMO -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                <!-- CARDS RESUMO ATUALIZADOS -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
                     <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
                         <div class="text-xs text-gray-500 mb-1">Total</div>
                         <div class="text-2xl font-bold text-gray-900" id="total-municipios">0</div>
@@ -182,8 +241,12 @@
                         <div class="text-2xl font-bold text-gray-600" id="total-sem-registro">0</div>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
-                        <div class="text-xs text-gray-500 mb-1">Emergências</div>
-                        <div class="text-2xl font-bold text-orange-600" id="total-emergencias">0</div>
+                        <div class="text-xs text-gray-500 mb-1">Com Barragens</div>
+                        <div class="text-2xl font-bold text-blue-600" id="total-barragens">0</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
+                        <div class="text-xs text-gray-500 mb-1">Defesa Civil</div>
+                        <div class="text-2xl font-bold text-green-600" id="total-defesa">0</div>
                     </div>
                 </div>
                 
@@ -204,17 +267,20 @@
                     <div id="map" style="height: 280px; border-radius: 0.75rem;"></div>
                 </div>
                 
-                <!-- LISTAGEM -->
+                <!-- LISTAGEM COM SCORE DE OPORTUNIDADE -->
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="font-medium text-base flex items-center">
                         <i class="fas fa-list mr-2 text-blue-500"></i>
                         Resultados <span class="ml-1 text-sm text-gray-400" id="total-resultados">(821)</span>
                     </h3>
-                    <select id="ordenarPor" class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white">
-                        <option value="nome">Ordem alfabética</option>
-                        <option value="risco">Maior risco</option>
-                        <option value="data">Mais recentes</option>
-                    </select>
+                    <div class="flex gap-2">
+                        <select id="ordenarPor" class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white">
+                            <option value="nome">Ordem alfabética</option>
+                            <option value="risco">Maior risco</option>
+                            <option value="data">Mais recentes</option>
+                            <option value="oportunidade">Melhor oportunidade</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="space-y-3 max-h-[500px] overflow-y-auto pr-1" id="lista-municipios"></div>
@@ -237,11 +303,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
                 <div class="flex items-center mb-3 md:mb-0">
-                    <span class="text-gray-500">PMRR Intelligence Platform</span>
+                    <span class="text-gray-500">PMRR Intelligence Platform v2.0 - Perfil Ideal de Cliente</span>
                 </div>
                 <div class="text-center md:text-right">
                     <div class="mb-1">
-                        <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">Fonte: SGB / Ministério das Cidades / Defesa Civil (mar/2026)</span>
+                        <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">Fonte: IBGE / SGB / ANM / Cemaden</span>
                     </div>
                     <div>Desenvolvido por Braspowertech | Todos os direitos reservados. © 2026</div>
                 </div>
@@ -250,7 +316,7 @@
     </footer>
 
     <script>
-        // ==================== MAPA DE ESTADOS (NOME COMPLETO) ====================
+        // ==================== MAPA DE ESTADOS ====================
         const estadosBrasil = {
             'AC': 'Acre', 'AL': 'Alagoas', 'AP': 'Amapá', 'AM': 'Amazonas', 'BA': 'Bahia',
             'CE': 'Ceará', 'DF': 'Distrito Federal', 'ES': 'Espírito Santo', 'GO': 'Goiás',
@@ -261,228 +327,260 @@
             'SE': 'Sergipe', 'TO': 'Tocantins'
         };
 
-        // ==================== DADOS DOS MUNICÍPIOS ====================
+        // ==================== DADOS ENRIQUECIDOS ====================
         const municipios = [
-            // SUL
-            { nome: "Blumenau", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "27/01/2026", emergencia: false, lat: -26.9, lng: -49.0 },
-            { nome: "Rio do Sul", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -27.2, lng: -49.6 },
-            { nome: "Brusque", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -27.1, lng: -48.9 },
-            { nome: "Itajaí", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.9, lng: -48.6 },
-            { nome: "Joinville", uf: "SC", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -26.3, lng: -48.8 },
-            { nome: "Florianópolis", uf: "SC", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -27.6, lng: -48.5 },
-            { nome: "São José", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.6, lng: -48.6 },
-            { nome: "Criciúma", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -28.7, lng: -49.3 },
-            { nome: "Chapecó", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -27.1, lng: -52.6 },
-            { nome: "Lages", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.8, lng: -50.3 },
-            { nome: "Tubarão", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -28.5, lng: -49.0 },
-            { nome: "Jaraguá do Sul", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.4, lng: -49.0 },
-            { nome: "Palhoça", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.6, lng: -48.6 },
-            { nome: "Gaspar", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.9, lng: -48.9 },
-            { nome: "Indaial", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.9, lng: -49.2 },
-            { nome: "Biguaçu", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.5, lng: -48.6 },
-            { nome: "Santa Cruz do Sul", uf: "RS", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: false, lat: -29.7, lng: -52.4 },
-            { nome: "Bento Gonçalves", uf: "RS", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -29.1, lng: -51.5 },
-            { nome: "Porto Alegre", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -30.0, lng: -51.1 },
-            { nome: "Canoas", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -29.9, lng: -51.1 },
-            { nome: "Novo Hamburgo", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -29.6, lng: -51.1 },
-            { nome: "São Leopoldo", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -29.7, lng: -51.1 },
-            { nome: "Caxias do Sul", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -29.1, lng: -51.1 },
-            { nome: "Pelotas", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -31.7, lng: -52.3 },
-            { nome: "Rio Grande", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -32.0, lng: -52.1 },
-            { nome: "Passo Fundo", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -28.2, lng: -52.4 },
-            { nome: "Lajeado", uf: "RS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -29.4, lng: -51.9 },
-            { nome: "Santa Maria", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -29.6, lng: -53.8 },
-            { nome: "Uruguaiana", uf: "RS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -29.7, lng: -57.0 },
-            { nome: "Bagé", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -31.3, lng: -54.1 },
-            { nome: "Curitiba", uf: "PR", risco: "Baixo", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2021", emergencia: false, lat: -25.4, lng: -49.2 },
-            { nome: "Londrina", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -23.3, lng: -51.1 },
-            { nome: "Maringá", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -23.4, lng: -51.9 },
-            { nome: "Ponta Grossa", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -25.1, lng: -50.1 },
-            { nome: "Cascavel", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -24.9, lng: -53.5 },
-            { nome: "São José dos Pinhais", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -25.5, lng: -49.2 },
-            { nome: "Foz do Iguaçu", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -25.5, lng: -54.5 },
-            { nome: "Paranaguá", uf: "PR", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -25.5, lng: -48.5 },
-            { nome: "Guarapuava", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -25.3, lng: -51.4 },
+            // SUL (com novos campos)
+            { 
+                nome: "Blumenau", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", 
+                tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "27/01/2026", emergencia: false, 
+                lat: -26.9, lng: -49.0,
+                populacao: 361855, porte: "Grande", pib_per_capita: 45000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Rio do Sul", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", 
+                tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, 
+                lat: -27.2, lng: -49.6,
+                populacao: 72116, porte: "Médio", pib_per_capita: 38000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Brusque", uf: "SC", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, 
+                lat: -27.1, lng: -48.9,
+                populacao: 137688, porte: "Médio", pib_per_capita: 42000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: false
+            },
+            { 
+                nome: "Itajaí", uf: "SC", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, 
+                lat: -26.9, lng: -48.6,
+                populacao: 223112, porte: "Grande", pib_per_capita: 51000, bioma: "Mata Atlântica",
+                tem_barragens: true, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Joinville", uf: "SC", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, 
+                lat: -26.3, lng: -48.8,
+                populacao: 597658, porte: "Grande", pib_per_capita: 48000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Florianópolis", uf: "SC", risco: "Médio", status: "EXECUTADO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, 
+                lat: -27.6, lng: -48.5,
+                populacao: 508826, porte: "Grande", pib_per_capita: 52000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Santa Cruz do Sul", uf: "RS", risco: "Alto", status: "HOMOLOGAÇÃO", 
+                tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: false, 
+                lat: -29.7, lng: -52.4,
+                populacao: 131565, porte: "Médio", pib_per_capita: 44000, bioma: "Pampa",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Porto Alegre", uf: "RS", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, 
+                lat: -30.0, lng: -51.1,
+                populacao: 1488252, porte: "Grande", pib_per_capita: 43000, bioma: "Pampa",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Curitiba", uf: "PR", risco: "Baixo", status: "EXECUTADO", 
+                tipoRisco: "🌊 Inundações", data: "2021", emergencia: false, 
+                lat: -25.4, lng: -49.2,
+                populacao: 1948626, porte: "Grande", pib_per_capita: 46000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
             
             // SUDESTE
-            { nome: "Petrópolis", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -22.5, lng: -43.1 },
-            { nome: "Nova Friburgo", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.2, lng: -42.5 },
-            { nome: "Teresópolis", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.4, lng: -42.9 },
-            { nome: "Angra dos Reis", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "04/03/2026", emergencia: true, lat: -23.0, lng: -44.3 },
-            { nome: "Nova Iguaçu", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -22.7, lng: -43.4 },
-            { nome: "São João de Meriti", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -22.8, lng: -43.3 },
-            { nome: "Mesquita", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -22.7, lng: -43.4 },
-            { nome: "Paty do Alferes", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "02/03/2026", emergencia: true, lat: -22.4, lng: -43.4 },
-            { nome: "Paraty", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "02/03/2026", emergencia: true, lat: -23.2, lng: -44.7 },
-            { nome: "Vassouras", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "09/03/2026", emergencia: true, lat: -22.4, lng: -43.6 },
-            { nome: "Rio de Janeiro", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.9, lng: -43.2 },
-            { nome: "São Gonçalo", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.8, lng: -43.0 },
-            { nome: "Duque de Caxias", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.7, lng: -43.3 },
-            { nome: "Belford Roxo", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.7, lng: -43.4 },
-            { nome: "São Paulo", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "2024", emergencia: false, lat: -23.5, lng: -46.6 },
-            { nome: "Guarulhos", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -23.4, lng: -46.5 },
-            { nome: "Campinas", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -22.9, lng: -47.0 },
-            { nome: "São Bernardo do Campo", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -23.6, lng: -46.5 },
-            { nome: "Santo André", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -23.6, lng: -46.5 },
-            { nome: "Diadema", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.6, lng: -46.6 },
-            { nome: "Ribeirão Pires", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.7, lng: -46.4 },
-            { nome: "Rio Grande da Serra", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.7, lng: -46.4 },
-            { nome: "Ubatuba", uf: "SP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "04/03/2026", emergencia: true, lat: -23.4, lng: -45.0 },
-            { nome: "Peruíbe", uf: "SP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -24.3, lng: -47.0 },
-            { nome: "Santos", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -23.9, lng: -46.3 },
-            { nome: "São Vicente", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -23.9, lng: -46.4 },
-            { nome: "Guarujá", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -24.0, lng: -46.2 },
-            { nome: "São Sebastião", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -23.7, lng: -45.4 },
-            { nome: "Caraguatatuba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -23.6, lng: -45.4 },
-            { nome: "Sorocaba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -23.5, lng: -47.4 },
-            { nome: "Jundiaí", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -23.1, lng: -46.9 },
-            { nome: "Piracicaba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.7, lng: -47.6 },
-            { nome: "Bauru", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.3, lng: -49.0 },
-            { nome: "São José do Rio Preto", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.8, lng: -49.3 },
-            { nome: "Ribeirão Preto", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -21.1, lng: -47.8 },
-            { nome: "Franca", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.5, lng: -47.4 },
-            { nome: "Presidente Prudente", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.1, lng: -51.4 },
-            { nome: "Araçatuba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -21.2, lng: -50.4 },
-            { nome: "Marília", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.2, lng: -49.9 },
-            { nome: "Itapetininga", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -23.6, lng: -48.0 },
-            { nome: "Botucatu", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.8, lng: -48.4 },
-            { nome: "Belo Horizonte", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -19.9, lng: -43.9 },
-            { nome: "Betim", uf: "MG", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -19.9, lng: -44.2 },
-            { nome: "Contagem", uf: "MG", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -19.9, lng: -44.0 },
-            { nome: "João Monlevade", uf: "MG", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -19.8, lng: -43.1 },
-            { nome: "Ouro Preto", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -20.3, lng: -43.5 },
-            { nome: "Mariana", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏭 Risco Geotécnico", data: "2020", emergencia: false, lat: -20.3, lng: -43.4 },
-            { nome: "Brumadinho", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏭 Risco Geotécnico", data: "2020", emergencia: false, lat: -20.1, lng: -44.2 },
-            { nome: "Barão de Cocais", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏭 Risco Geotécnico", data: "2021", emergencia: false, lat: -19.9, lng: -43.4 },
-            { nome: "Juiz de Fora", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -21.7, lng: -43.3 },
-            { nome: "Governador Valadares", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2021", emergencia: false, lat: -18.8, lng: -41.9 },
-            { nome: "Uberlândia", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "⚡ Enxurradas", data: "2022", emergencia: false, lat: -18.9, lng: -48.2 },
-            { nome: "Uberaba", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -19.7, lng: -47.9 },
-            { nome: "Montes Claros", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -16.7, lng: -43.8 },
-            { nome: "Ipatinga", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.4, lng: -42.5 },
-            { nome: "Divinópolis", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.1, lng: -44.8 },
-            { nome: "Sete Lagoas", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -19.4, lng: -44.2 },
-            { nome: "Cataguases", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -21.3, lng: -42.6 },
-            { nome: "Guidoval", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "09/03/2026", emergencia: true, lat: -21.1, lng: -42.7 },
-            { nome: "Ladainha", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "09/03/2026", emergencia: true, lat: -17.6, lng: -41.7 },
-            { nome: "Novo Cruzeiro", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "09/03/2026", emergencia: true, lat: -17.4, lng: -41.9 },
-            { nome: "Pedra Dourada", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "09/03/2026", emergencia: true, lat: -20.8, lng: -42.1 },
-            { nome: "Água Boa", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -17.9, lng: -42.3 },
-            { nome: "Areado", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -21.3, lng: -46.1 },
-            { nome: "Vitória", uf: "ES", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -20.3, lng: -40.3 },
-            { nome: "Vila Velha", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -20.3, lng: -40.3 },
-            { nome: "Serra", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -20.1, lng: -40.3 },
-            { nome: "Cariacica", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -20.2, lng: -40.4 },
-            { nome: "Cachoeiro de Itapemirim", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -20.8, lng: -41.1 },
-            { nome: "Linhares", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.3, lng: -40.0 },
-            { nome: "Colatina", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.5, lng: -40.6 },
+            { 
+                nome: "Petrópolis", uf: "RJ", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, 
+                lat: -22.5, lng: -43.1,
+                populacao: 306678, porte: "Grande", pib_per_capita: 35000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Angra dos Reis", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "04/03/2026", emergencia: true, 
+                lat: -23.0, lng: -44.3,
+                populacao: 207044, porte: "Grande", pib_per_capita: 38000, bioma: "Mata Atlântica",
+                tem_barragens: true, defesa_civil_ativa: false
+            },
+            { 
+                nome: "Rio de Janeiro", uf: "RJ", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, 
+                lat: -22.9, lng: -43.2,
+                populacao: 6748000, porte: "Grande", pib_per_capita: 42000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "São Paulo", uf: "SP", risco: "Médio", status: "EXECUTADO", 
+                tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "2024", emergencia: false, 
+                lat: -23.5, lng: -46.6,
+                populacao: 12300000, porte: "Grande", pib_per_capita: 54000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Diadema", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, 
+                lat: -23.6, lng: -46.6,
+                populacao: 426757, porte: "Grande", pib_per_capita: 29000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Belo Horizonte", uf: "MG", risco: "Médio", status: "EXECUTADO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, 
+                lat: -19.9, lng: -43.9,
+                populacao: 2521564, porte: "Grande", pib_per_capita: 37000, bioma: "Cerrado",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Mariana", uf: "MG", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🏭 Risco Geotécnico", data: "2020", emergencia: false, 
+                lat: -20.3, lng: -43.4,
+                populacao: 61600, porte: "Médio", pib_per_capita: 32000, bioma: "Mata Atlântica",
+                tem_barragens: true, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Brumadinho", uf: "MG", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🏭 Risco Geotécnico", data: "2020", emergencia: false, 
+                lat: -20.1, lng: -44.2,
+                populacao: 39600, porte: "Pequeno", pib_per_capita: 35000, bioma: "Mata Atlântica",
+                tem_barragens: true, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Vitória", uf: "ES", risco: "Médio", status: "EXECUTADO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, 
+                lat: -20.3, lng: -40.3,
+                populacao: 365855, porte: "Grande", pib_per_capita: 49000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
             
             // CENTRO-OESTE
-            { nome: "Goiânia", uf: "GO", risco: "Alto", status: "EXECUTADO", tipoRisco: "⚡ Enxurradas", data: "11/02/2026", emergencia: false, lat: -16.6, lng: -49.2 },
-            { nome: "Aparecida de Goiânia", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -16.8, lng: -49.2 },
-            { nome: "Anápolis", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -16.3, lng: -48.9 },
-            { nome: "Rio Verde", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -17.7, lng: -50.9 },
-            { nome: "Catalão", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -18.1, lng: -47.9 },
-            { nome: "Itumbiara", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -18.4, lng: -49.2 },
-            { nome: "Cuiabá", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -15.6, lng: -56.1 },
-            { nome: "Várzea Grande", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -15.6, lng: -56.1 },
-            { nome: "Rondonópolis", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -16.4, lng: -54.6 },
-            { nome: "Sinop", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -11.8, lng: -55.5 },
-            { nome: "Campo Grande", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.4, lng: -54.6 },
-            { nome: "Dourados", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.2, lng: -54.8 },
-            { nome: "Três Lagoas", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -20.8, lng: -51.7 },
-            { nome: "Corumbá", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.0, lng: -57.6 },
-            { nome: "Brasília", uf: "DF", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -15.8, lng: -47.9 },
+            { 
+                nome: "Goiânia", uf: "GO", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "⚡ Enxurradas", data: "11/02/2026", emergencia: false, 
+                lat: -16.6, lng: -49.2,
+                populacao: 1536097, porte: "Grande", pib_per_capita: 33000, bioma: "Cerrado",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Brasília", uf: "DF", risco: "Médio", status: "SEM REGISTRO", 
+                tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, 
+                lat: -15.8, lng: -47.9,
+                populacao: 3055149, porte: "Grande", pib_per_capita: 61000, bioma: "Cerrado",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Cuiabá", uf: "MT", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, 
+                lat: -15.6, lng: -56.1,
+                populacao: 618124, porte: "Grande", pib_per_capita: 31000, bioma: "Pantanal",
+                tem_barragens: false, defesa_civil_ativa: false
+            },
+            { 
+                nome: "Campo Grande", uf: "MS", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, 
+                lat: -20.4, lng: -54.6,
+                populacao: 906092, porte: "Grande", pib_per_capita: 34000, bioma: "Cerrado",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
             
             // NORDESTE
-            { nome: "Fortaleza", uf: "CE", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -3.7, lng: -38.5 },
-            { nome: "Caucaia", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.7, lng: -38.6 },
-            { nome: "Juazeiro do Norte", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -7.2, lng: -39.3 },
-            { nome: "Sobral", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -3.6, lng: -40.3 },
-            { nome: "Crato", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -7.2, lng: -39.4 },
-            { nome: "Salvador", uf: "BA", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -12.9, lng: -38.5 },
-            { nome: "Feira de Santana", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -12.2, lng: -38.9 },
-            { nome: "Vitória da Conquista", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -14.8, lng: -40.8 },
-            { nome: "Camaçari", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -12.7, lng: -38.3 },
-            { nome: "Juazeiro", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.4, lng: -40.5 },
-            { nome: "Ilhéus", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -14.7, lng: -39.0 },
-            { nome: "Porto Seguro", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -16.4, lng: -39.0 },
-            { nome: "Barreiras", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -12.1, lng: -44.9 },
-            { nome: "Cipó", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "09/03/2026", emergencia: true, lat: -11.1, lng: -38.5 },
-            { nome: "Abaré", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "02/03/2026", emergencia: true, lat: -8.7, lng: -39.1 },
-            { nome: "Recife", uf: "PE", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2020", emergencia: false, lat: -8.0, lng: -34.9 },
-            { nome: "Olinda", uf: "PE", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -8.0, lng: -34.8 },
-            { nome: "Paulista", uf: "PE", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -7.9, lng: -34.8 },
-            { nome: "Jaboatão dos Guararapes", uf: "PE", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -8.1, lng: -35.0 },
-            { nome: "Caruaru", uf: "PE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -8.2, lng: -35.9 },
-            { nome: "Petrolina", uf: "PE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.3, lng: -40.5 },
-            { nome: "Maceió", uf: "AL", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🏭 Risco Geotécnico", data: "04/03/2026", emergencia: false, lat: -9.6, lng: -35.7 },
-            { nome: "Rio Largo", uf: "AL", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -9.5, lng: -35.8 },
-            { nome: "Piranhas", uf: "AL", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "09/03/2026", emergencia: true, lat: -9.6, lng: -37.7 },
-            { nome: "Arapiraca", uf: "AL", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.7, lng: -36.6 },
-            { nome: "Palmeira dos Índios", uf: "AL", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.4, lng: -36.6 },
-            { nome: "São Luís", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -2.5, lng: -44.3 },
-            { nome: "Imperatriz", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.5, lng: -47.4 },
-            { nome: "Caxias", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.8, lng: -43.3 },
-            { nome: "Timon", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.1, lng: -42.8 },
-            { nome: "Grajaú", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: true, lat: -5.8, lng: -46.1 },
-            { nome: "Codó", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.4, lng: -43.8 },
-            { nome: "Teresina", uf: "PI", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -5.0, lng: -42.7 },
-            { nome: "Parnaíba", uf: "PI", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -2.9, lng: -41.7 },
-            { nome: "Picos", uf: "PI", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -7.0, lng: -41.4 },
-            { nome: "Natal", uf: "RN", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.7, lng: -35.2 },
-            { nome: "Mossoró", uf: "RN", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -5.1, lng: -37.3 },
-            { nome: "Parnamirim", uf: "RN", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.9, lng: -35.2 },
-            { nome: "João Pessoa", uf: "PB", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -7.1, lng: -34.8 },
-            { nome: "Campina Grande", uf: "PB", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -7.2, lng: -35.9 },
-            { nome: "Aracaju", uf: "SE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.9, lng: -37.0 },
-            { nome: "Nossa Senhora do Socorro", uf: "SE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.8, lng: -37.1 },
+            { 
+                nome: "Fortaleza", uf: "CE", risco: "Alto", status: "EM DESENVOLVIMENTO", 
+                tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, 
+                lat: -3.7, lng: -38.5,
+                populacao: 2686612, porte: "Grande", pib_per_capita: 24000, bioma: "Caatinga",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Salvador", uf: "BA", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, 
+                lat: -12.9, lng: -38.5,
+                populacao: 2886698, porte: "Grande", pib_per_capita: 26000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Recife", uf: "PE", risco: "Alto", status: "EXECUTADO", 
+                tipoRisco: "🌊 Inundações", data: "2020", emergencia: false, 
+                lat: -8.0, lng: -34.9,
+                populacao: 1653461, porte: "Grande", pib_per_capita: 28000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Maceió", uf: "AL", risco: "Alto", status: "HOMOLOGAÇÃO", 
+                tipoRisco: "🏭 Risco Geotécnico", data: "04/03/2026", emergencia: false, 
+                lat: -9.6, lng: -35.7,
+                populacao: 1018948, porte: "Grande", pib_per_capita: 21000, bioma: "Mata Atlântica",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "São Luís", uf: "MA", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, 
+                lat: -2.5, lng: -44.3,
+                populacao: 1101884, porte: "Grande", pib_per_capita: 22000, bioma: "Amazônia",
+                tem_barragens: false, defesa_civil_ativa: false
+            },
+            { 
+                nome: "Teresina", uf: "PI", risco: "Alto", status: "EM DESENVOLVIMENTO", 
+                tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, 
+                lat: -5.0, lng: -42.7,
+                populacao: 868075, porte: "Grande", pib_per_capita: 20000, bioma: "Cerrado",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
             
             // NORTE
-            { nome: "Manaus", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.1, lng: -60.0 },
-            { nome: "Parintins", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -2.6, lng: -56.7 },
-            { nome: "Itacoatiara", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.1, lng: -58.4 },
-            { nome: "Manacapuru", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.3, lng: -60.6 },
-            { nome: "Coari", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.1, lng: -63.1 },
-            { nome: "Tefé", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.3, lng: -64.7 },
-            { nome: "Rio Branco", uf: "AC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -9.9, lng: -67.8 },
-            { nome: "Cruzeiro do Sul", uf: "AC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -7.6, lng: -72.6 },
-            { nome: "Porto Velho", uf: "RO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -8.7, lng: -63.9 },
-            { nome: "Ji-Paraná", uf: "RO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.8, lng: -61.9 },
-            { nome: "Ariquemes", uf: "RO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -9.9, lng: -63.0 },
-            { nome: "Belém", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.4, lng: -48.4 },
-            { nome: "Ananindeua", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.3, lng: -48.3 },
-            { nome: "Santarém", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -2.4, lng: -54.7 },
-            { nome: "Marabá", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.3, lng: -49.1 },
-            { nome: "Castanhal", uf: "PA", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.2, lng: -47.9 },
-            { nome: "Parauapebas", uf: "PA", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -6.0, lng: -49.9 },
-            { nome: "Portel", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "02/03/2026", emergencia: true, lat: -1.9, lng: -50.8 },
-            { nome: "Macapá", uf: "AP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: 0.0, lng: -51.0 },
-            { nome: "Santana", uf: "AP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -0.0, lng: -51.1 },
-            { nome: "Boa Vista", uf: "RR", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: 2.8, lng: -60.6 },
-            { nome: "Caracaraí", uf: "RR", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: 1.8, lng: -61.1 },
-            { nome: "Palmas", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -10.2, lng: -48.3 },
-            { nome: "Araguaína", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -7.1, lng: -48.2 },
-            { nome: "Gurupi", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -11.7, lng: -49.0 },
-            { nome: "Porto Nacional", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.7, lng: -48.4 }
+            { 
+                nome: "Manaus", uf: "AM", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, 
+                lat: -3.1, lng: -60.0,
+                populacao: 2219580, porte: "Grande", pib_per_capita: 30000, bioma: "Amazônia",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Rio Branco", uf: "AC", risco: "Alto", status: "EM DESENVOLVIMENTO", 
+                tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, 
+                lat: -9.9, lng: -67.8,
+                populacao: 413418, porte: "Grande", pib_per_capita: 19000, bioma: "Amazônia",
+                tem_barragens: false, defesa_civil_ativa: true
+            },
+            { 
+                nome: "Belém", uf: "PA", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, 
+                lat: -1.4, lng: -48.4,
+                populacao: 1499641, porte: "Grande", pib_per_capita: 23000, bioma: "Amazônia",
+                tem_barragens: false, defesa_civil_ativa: false
+            },
+            { 
+                nome: "Palmas", uf: "TO", risco: "Alto", status: "SEM REGISTRO", 
+                tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, 
+                lat: -10.2, lng: -48.3,
+                populacao: 306296, porte: "Grande", pib_per_capita: 25000, bioma: "Cerrado",
+                tem_barragens: false, defesa_civil_ativa: true
+            }
         ];
 
-        // ==================== LISTA DE CIDADES BRASILEIRAS PARA COMPLETAR 821 ====================
+        // ==================== LISTA DE CIDADES PARA COMPLETAR 821 ====================
         const cidadesBrasileiras = [
             'Nova Esperança', 'Bela Vista', 'Campo Verde', 'Rio Bonito', 'Monte Azul',
             'Vale Verde', 'Santa Rita', 'São José', 'Nossa Senhora', 'Bom Jesus',
             'Santo Antônio', 'São Sebastião', 'Santa Maria', 'Aparecida', 'Nossa Senhora do Carmo',
-            'São João', 'São Pedro', 'São Paulo', 'Santa Bárbara', 'Nova Olinda',
-            'Água Branca', 'Barra Bonita', 'Cachoeira', 'Divinópolis', 'Esperança',
-            'Flores', 'Guarani', 'Ibirapuera', 'Jaboticabal', 'Laranjeiras',
-            'Mogi das Cruzes', 'Niterói', 'Olinda', 'Pindamonhangaba', 'Quixadá',
-            'Recife', 'Salvador', 'Taubaté', 'Ubatuba', 'Varginha',
-            'Araxá', 'Botucatu', 'Camboriú', 'Dourados', 'Estância',
-            'Franca', 'Guaratinguetá', 'Hortolândia', 'Indaiatuba', 'Jaboatão',
-            'Londrina', 'Maceió', 'Natal', 'Osasco', 'Pelotas'
+            'São João', 'São Pedro', 'Santa Bárbara', 'Nova Olinda', 'Água Branca',
+            'Barra Bonita', 'Cachoeira', 'Divinópolis', 'Esperança', 'Flores',
+            'Guarani', 'Ibirapuera', 'Jaboticabal', 'Laranjeiras', 'Mogi das Cruzes',
+            'Niterói', 'Olinda', 'Pindamonhangaba', 'Quixadá', 'Taubaté',
+            'Varginha', 'Araxá', 'Botucatu', 'Camboriú', 'Dourados',
+            'Franca', 'Guaratinguetá', 'Indaiatuba', 'Jaboatão', 'Osasco'
         ];
 
-        // ==================== TIPOS DE RISCO PADRONIZADOS ====================
+        const biomas = ['Amazônia', 'Cerrado', 'Mata Atlântica', 'Caatinga', 'Pampa', 'Pantanal'];
+        const portes = ['Pequeno', 'Médio', 'Grande'];
+        const statusOptions = ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'];
+        const riscoOptions = ['Alto', 'Médio', 'Baixo'];
         const tiposRiscoPadronizados = [
             '🌊 Inundações',
             '🏔️ Deslizamentos',
@@ -491,12 +589,9 @@
             '🏭 Risco Geotécnico',
             '🏜️ Seca'
         ];
-        
-        const statusOptions = ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'];
-        const riscoOptions = ['Alto', 'Médio', 'Baixo'];
         const listaUfs = Object.keys(estadosBrasil);
         
-        // Garantir que temos exatamente 821 municípios
+        // Completar até 821
         const totalNecessario = 821;
         const quantidadeAtual = municipios.length;
         
@@ -515,15 +610,55 @@
                     data: "2026",
                     emergencia: i % 7 === 0,
                     lat: -15 + (Math.random() - 0.5) * 20,
-                    lng: -55 + (Math.random() - 0.5) * 30
+                    lng: -55 + (Math.random() - 0.5) * 30,
+                    populacao: Math.floor(Math.random() * 500000) + 20000,
+                    porte: portes[i % 3],
+                    pib_per_capita: Math.floor(Math.random() * 60000) + 10000,
+                    bioma: biomas[i % biomas.length],
+                    tem_barragens: Math.random() > 0.7,
+                    defesa_civil_ativa: Math.random() > 0.5
                 });
             }
         }
 
-        console.log('Total de municípios:', municipios.length); // Deve mostrar 821
+        // ==================== CALCULAR SCORE DE OPORTUNIDADE ====================
+        function calcularScore(municipio) {
+            let score = 0;
+            
+            // Risco alto = +3, médio = +2, baixo = +1
+            score += municipio.risco === 'Alto' ? 3 : municipio.risco === 'Médio' ? 2 : 1;
+            
+            // Sem registro = +3 (precisa de PMRR)
+            score += municipio.status === 'SEM REGISTRO' ? 3 : municipio.status === 'EM DESENVOLVIMENTO' ? 1 : 0;
+            
+            // Emergência recente = +2
+            score += municipio.emergencia ? 2 : 0;
+            
+            // Tem barragens = +3
+            score += municipio.tem_barragens ? 3 : 0;
+            
+            // Defesa civil ativa = +2 (estrutura existe)
+            score += municipio.defesa_civil_ativa ? 2 : 0;
+            
+            // População grande = +2
+            score += municipio.porte === 'Grande' ? 2 : municipio.porte === 'Médio' ? 1 : 0;
+            
+            // PIB per capita alto (acima de 40k) = +2
+            score += municipio.pib_per_capita > 40000 ? 2 : 0;
+            
+            return score;
+        }
+
+        // Adicionar score a todos os municípios
+        municipios.forEach(m => m.score = calcularScore(m));
+
+        console.log('Total de municípios:', municipios.length);
 
         // ==================== ESTADO DA APLICAÇÃO ====================
-        let filtrosAtivos = { estados: [], riscos: [], status: [], tipos: [] };
+        let filtrosAtivos = { 
+            estados: [], riscos: [], status: [], tipos: [],
+            porte: [], pib: [], bioma: [], barragem: [], defesaCivil: []
+        };
         let municipiosFiltrados = [...municipios];
         let pagina = 1;
         const itemsPorPagina = 10;
@@ -532,52 +667,98 @@
 
         // ==================== FUNÇÕES DOS FILTROS ====================
         function carregarOpcoesFiltros() {
-            // Estados com nome completo
+            // Estados
             const ufs = [...new Set(municipios.map(m => m.uf))].sort();
             document.getElementById('opcoes-estado').innerHTML = ufs.map(uf => `
-                <label class="flex items-center py-1">
+                <label class="flex items-center py-2">
                     <input type="checkbox" class="filtro-checkbox mr-3" value="${uf}" onchange="selecionarFiltro('estados', this)">
                     <span class="text-sm text-gray-700 flex-1">${estadosBrasil[uf]} (${uf})</span>
-                    <span class="text-xs text-gray-400">${municipios.filter(m => m.uf === uf).length}</span>
                 </label>
             `).join('');
 
             // Riscos
             const riscos = ['Alto', 'Médio', 'Baixo'];
             document.getElementById('opcoes-risco').innerHTML = riscos.map(risco => `
-                <label class="flex items-center py-1">
+                <label class="flex items-center py-2">
                     <input type="checkbox" class="filtro-checkbox mr-3" value="${risco}" onchange="selecionarFiltro('riscos', this)">
                     <span class="text-sm text-gray-700 flex items-center flex-1">
                         <span class="w-2 h-2 ${risco === 'Alto' ? 'bg-red-500' : risco === 'Médio' ? 'bg-yellow-500' : 'bg-green-500'} rounded-full mr-2"></span> ${risco}
                     </span>
-                    <span class="text-xs text-gray-400">${municipios.filter(m => m.risco === risco).length}</span>
                 </label>
             `).join('');
 
             // Status
             document.getElementById('opcoes-status').innerHTML = statusOptions.map(status => `
-                <label class="flex items-center py-1">
+                <label class="flex items-center py-2">
                     <input type="checkbox" class="filtro-checkbox mr-3" value="${status}" onchange="selecionarFiltro('status', this)">
                     <span class="text-sm text-gray-700 flex-1">${status}</span>
-                    <span class="text-xs text-gray-400">${municipios.filter(m => m.status === status).length}</span>
                 </label>
             `).join('');
 
-            // Tipos de Risco (padronizados)
+            // Porte
+            document.getElementById('opcoes-porte').innerHTML = portes.map(porte => `
+                <label class="flex items-center py-2">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="${porte}" onchange="selecionarFiltro('porte', this)">
+                    <span class="text-sm text-gray-700 flex-1">${porte}</span>
+                </label>
+            `).join('');
+
+            // PIB (faixas)
+            const faixasPib = ['Baixo (< 20k)', 'Médio (20k-40k)', 'Alto (> 40k)'];
+            document.getElementById('opcoes-pib').innerHTML = faixasPib.map((faixa, idx) => `
+                <label class="flex items-center py-2">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="${idx}" onchange="selecionarFiltro('pib', this)">
+                    <span class="text-sm text-gray-700 flex-1">${faixa}</span>
+                </label>
+            `).join('');
+
+            // Bioma
+            document.getElementById('opcoes-bioma').innerHTML = biomas.map(bioma => `
+                <label class="flex items-center py-2">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="${bioma}" onchange="selecionarFiltro('bioma', this)">
+                    <span class="text-sm text-gray-700 flex-1">${bioma}</span>
+                </label>
+            `).join('');
+
+            // Barragens
+            document.getElementById('opcoes-barragem').innerHTML = `
+                <label class="flex items-center py-2">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="true" onchange="selecionarFiltro('barragem', this)">
+                    <span class="text-sm text-gray-700 flex-1">Com barragens</span>
+                </label>
+                <label class="flex items-center py-2">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="false" onchange="selecionarFiltro('barragem', this)">
+                    <span class="text-sm text-gray-700 flex-1">Sem barragens</span>
+                </label>
+            `;
+
+            // Defesa Civil
+            document.getElementById('opcoes-defesaCivil').innerHTML = `
+                <label class="flex items-center py-2">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="true" onchange="selecionarFiltro('defesaCivil', this)">
+                    <span class="text-sm text-gray-700 flex-1">Defesa Civil ativa</span>
+                </label>
+                <label class="flex items-center py-2">
+                    <input type="checkbox" class="filtro-checkbox mr-3" value="false" onchange="selecionarFiltro('defesaCivil', this)">
+                    <span class="text-sm text-gray-700 flex-1">Defesa Civil inativa</span>
+                </label>
+            `;
+
+            // Tipos de Risco
             document.getElementById('opcoes-tipo').innerHTML = tiposRiscoPadronizados.map(tipo => `
-                <label class="flex items-center py-1">
+                <label class="flex items-center py-2">
                     <input type="checkbox" class="filtro-checkbox mr-3" value="${tipo}" onchange="selecionarFiltro('tipos', this)">
                     <span class="text-sm text-gray-700 flex-1">${tipo}</span>
-                    <span class="text-xs text-gray-400">${municipios.filter(m => m.tipoRisco === tipo).length}</span>
                 </label>
             `).join('');
         }
 
         function selecionarFiltro(tipo, checkbox) {
+            const valor = checkbox.value === 'true' ? true : checkbox.value === 'false' ? false : checkbox.value;
             if (checkbox.checked) {
-                filtrosAtivos[tipo].push(checkbox.value);
+                filtrosAtivos[tipo].push(valor);
             } else {
-                const index = filtrosAtivos[tipo].indexOf(checkbox.value);
+                const index = filtrosAtivos[tipo].findIndex(v => String(v) === String(valor));
                 if (index > -1) filtrosAtivos[tipo].splice(index, 1);
             }
             atualizarChips();
@@ -593,6 +774,13 @@
                     if (tipo === 'estados' && estadosBrasil[valor]) {
                         displayValor = `${estadosBrasil[valor]} (${valor})`;
                     }
+                    if (tipo === 'pib') {
+                        const faixas = ['Baixo (< 20k)', 'Médio (20k-40k)', 'Alto (> 40k)'];
+                        displayValor = faixas[valor];
+                    }
+                    if (tipo === 'barragem') displayValor = valor ? 'Com barragens' : 'Sem barragens';
+                    if (tipo === 'defesaCivil') displayValor = valor ? 'Defesa Civil ativa' : 'Defesa Civil inativa';
+                    
                     html += `<span class="chip">
                         ${displayValor} 
                         <span class="chip-remover" onclick="removerFiltro('${tipo}', '${valor}')">
@@ -602,7 +790,7 @@
                 });
             });
             
-            if (filtrosAtivos.estados.length + filtrosAtivos.riscos.length + filtrosAtivos.status.length + filtrosAtivos.tipos.length > 0) {
+            if (Object.values(filtrosAtivos).flat().length > 0) {
                 html += `<span class="text-xs text-blue-600 ml-2 cursor-pointer hover:underline" onclick="limparTodosFiltros()">Limpar todos</span>`;
             } else {
                 html += '<span class="text-xs text-gray-400">Nenhum filtro aplicado</span>';
@@ -613,11 +801,12 @@
         }
 
         function removerFiltro(tipo, valor) {
-            const index = filtrosAtivos[tipo].indexOf(valor);
+            const valorConvertido = valor === 'true' ? true : valor === 'false' ? false : valor;
+            const index = filtrosAtivos[tipo].findIndex(v => String(v) === String(valorConvertido));
             if (index > -1) {
                 filtrosAtivos[tipo].splice(index, 1);
                 document.querySelectorAll('.filtro-checkbox').forEach(cb => {
-                    if (cb.value === valor) cb.checked = false;
+                    if (String(cb.value) === String(valor)) cb.checked = false;
                 });
                 atualizarChips();
                 aplicarFiltros();
@@ -625,7 +814,10 @@
         }
 
         function limparTodosFiltros() {
-            filtrosAtivos = { estados: [], riscos: [], status: [], tipos: [] };
+            filtrosAtivos = { 
+                estados: [], riscos: [], status: [], tipos: [],
+                porte: [], pib: [], bioma: [], barragem: [], defesaCivil: []
+            };
             document.querySelectorAll('.filtro-checkbox').forEach(cb => cb.checked = false);
             atualizarChips();
             aplicarFiltros();
@@ -633,7 +825,7 @@
 
         function toggleFiltro(tipo) {
             const content = document.getElementById(`filtro-${tipo}-content`);
-            content.classList.toggle('hidden');
+            if (content) content.classList.toggle('hidden');
         }
 
         function toggleFiltros() {
@@ -657,6 +849,19 @@
                 if (filtrosAtivos.riscos.length > 0 && !filtrosAtivos.riscos.includes(m.risco)) return false;
                 if (filtrosAtivos.status.length > 0 && !filtrosAtivos.status.includes(m.status)) return false;
                 if (filtrosAtivos.tipos.length > 0 && !filtrosAtivos.tipos.includes(m.tipoRisco)) return false;
+                if (filtrosAtivos.porte.length > 0 && !filtrosAtivos.porte.includes(m.porte)) return false;
+                if (filtrosAtivos.bioma.length > 0 && !filtrosAtivos.bioma.includes(m.bioma)) return false;
+                if (filtrosAtivos.barragem.length > 0 && !filtrosAtivos.barragem.includes(m.tem_barragens)) return false;
+                if (filtrosAtivos.defesaCivil.length > 0 && !filtrosAtivos.defesaCivil.includes(m.defesa_civil_ativa)) return false;
+                
+                if (filtrosAtivos.pib.length > 0) {
+                    let faixaPib = 0;
+                    if (m.pib_per_capita < 20000) faixaPib = 0;
+                    else if (m.pib_per_capita <= 40000) faixaPib = 1;
+                    else faixaPib = 2;
+                    if (!filtrosAtivos.pib.includes(faixaPib)) return false;
+                }
+                
                 return true;
             });
             
@@ -673,7 +878,8 @@
             document.getElementById('total-municipios').textContent = municipiosFiltrados.length;
             document.getElementById('total-risco-alto').textContent = municipiosFiltrados.filter(m => m.risco === 'Alto').length;
             document.getElementById('total-sem-registro').textContent = municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length;
-            document.getElementById('total-emergencias').textContent = municipiosFiltrados.filter(m => m.emergencia).length;
+            document.getElementById('total-barragens').textContent = municipiosFiltrados.filter(m => m.tem_barragens).length;
+            document.getElementById('total-defesa').textContent = municipiosFiltrados.filter(m => m.defesa_civil_ativa).length;
             document.getElementById('total-resultados').textContent = `(${municipiosFiltrados.length})`;
         }
 
@@ -691,11 +897,18 @@
                                     m.status === 'EM DESENVOLVIMENTO' ? 'badge-desenvolvimento' :
                                     m.status === 'HOMOLOGAÇÃO' ? 'badge-homologacao' : 'badge-sem-registro';
                     
+                    let scoreClass = m.score >= 10 ? 'score-alto' : m.score >= 6 ? 'score-medio' : 'score-baixo';
+                    
                     return `
                     <div class="bg-white rounded-xl shadow-sm p-4 card-hover border-l-4 border-${m.risco === 'Alto' ? 'red' : m.risco === 'Médio' ? 'yellow' : 'green'}-500">
                         <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-semibold text-base">${m.nome} <span class="text-gray-400 text-sm">${m.uf}</span></h4>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-semibold text-base">${m.nome} <span class="text-gray-400 text-sm">${m.uf}</span></h4>
+                                    <span class="badge ${scoreClass} text-[10px] px-2 py-0.5">
+                                        🎯 Score: ${m.score}
+                                    </span>
+                                </div>
                                 <div class="flex flex-wrap gap-2 mt-2">
                                     <span class="badge ${m.risco === 'Alto' ? 'bg-red-100 text-red-700' : m.risco === 'Médio' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
                                         🔥 ${m.risco}
@@ -704,8 +917,15 @@
                                         ${m.status === 'EXECUTADO' ? '✅' : m.status === 'EM DESENVOLVIMENTO' ? '🔄' : m.status === 'HOMOLOGAÇÃO' ? '📝' : '❓'} ${m.status}
                                     </span>
                                     ${m.emergencia ? '<span class="badge bg-red-100 text-red-700">🚨 Emergência</span>' : ''}
+                                    ${m.tem_barragens ? '<span class="badge bg-blue-100 text-blue-700">🏭 Barragens</span>' : ''}
+                                    ${m.defesa_civil_ativa ? '<span class="badge bg-green-100 text-green-700">🛡️ Defesa Civil</span>' : ''}
                                 </div>
-                                <div class="text-xs text-gray-400 mt-2">${m.tipoRisco}</div>
+                                <div class="flex flex-wrap gap-3 mt-2 text-xs text-gray-500">
+                                    <span><i class="fas fa-users mr-1"></i>${m.populacao.toLocaleString()} hab</span>
+                                    <span><i class="fas fa-chart-line mr-1"></i>PIB: R$ ${m.pib_per_capita.toLocaleString()}</span>
+                                    <span><i class="fas fa-tree mr-1"></i>${m.bioma}</span>
+                                    <span><i class="fas fa-tag mr-1"></i>${m.tipoRisco}</span>
+                                </div>
                             </div>
                             <span class="text-xs text-gray-400">${m.data}</span>
                         </div>
@@ -828,7 +1048,6 @@
                 }
             });
 
-            // Limitar a 100 pins para performance
             municipiosFiltrados.slice(0, 100).forEach(m => {
                 if (m.lat && m.lng) {
                     const cor = m.risco === 'Alto' ? '#EF4444' : m.risco === 'Médio' ? '#F59E0B' : '#10B981';
@@ -844,7 +1063,10 @@
                         <b>${m.nome} - ${m.uf}</b><br>
                         Risco: ${m.risco}<br>
                         Status: ${m.status}<br>
-                        ${m.tipoRisco}
+                        Score: ${m.score}<br>
+                        Pop: ${m.populacao.toLocaleString()}<br>
+                        ${m.tem_barragens ? '🏭 Tem barragens' : ''}<br>
+                        ${m.defesa_civil_ativa ? '🛡️ Defesa Civil ativa' : ''}
                     `);
                 }
             });
@@ -860,6 +1082,8 @@
                 municipiosFiltrados.sort((a, b) => ordemRisco[a.risco] - ordemRisco[b.risco]);
             } else if (criterio === 'data') {
                 municipiosFiltrados.sort((a, b) => b.data.localeCompare(a.data));
+            } else if (criterio === 'oportunidade') {
+                municipiosFiltrados.sort((a, b) => b.score - a.score);
             }
             
             renderizarCards();
@@ -886,19 +1110,14 @@
 
         // ==================== INICIALIZAÇÃO ====================
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializa o mapa
             map = L.map('map').setView([-15, -55], 4);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '©OpenStreetMap'
             }).addTo(map);
             
-            // Carrega os filtros
             carregarOpcoesFiltros();
-            
-            // Atualiza a interface
             atualizarInterface();
             
-            // Event listeners
             document.getElementById('ordenarPor').addEventListener('change', ordenarMunicipios);
             
             document.getElementById('searchInput').addEventListener('input', function(e) {
