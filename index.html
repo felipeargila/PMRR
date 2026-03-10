@@ -23,7 +23,7 @@
         .badge-sem-registro { @apply bg-gray-100 text-gray-700; }
         
         .filtro-card {
-            @apply bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-4;
+            @apply bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden;
         }
         .filtro-header {
             @apply px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center cursor-pointer;
@@ -111,8 +111,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex flex-col lg:flex-row gap-6">
             
-            <!-- SIDEBAR FILTROS -->
-            <div id="filtrosSidebar" class="lg:w-80 lg:sticky lg:top-24 hidden lg:block" style="max-height: calc(100vh - 120px); overflow-y: auto;">
+            <!-- SIDEBAR FILTROS - COM ESPAÇAMENTO EXTERNO -->
+            <div id="filtrosSidebar" class="lg:w-80 lg:sticky lg:top-24 hidden lg:block space-y-4" style="max-height: calc(100vh - 120px); overflow-y: auto;">
                 
                 <!-- FILTRO ESTADO -->
                 <div class="filtro-card">
@@ -159,7 +159,7 @@
                     </div>
                 </div>
                 
-                <!-- FILTRO PIB PER CAPITA -->
+                <!-- FILTRO PIB PER CAPITA (CORRIGIDO) -->
                 <div class="filtro-card">
                     <div class="filtro-header" onclick="toggleFiltro('pib')">
                         <span><i class="fas fa-chart-line mr-2 text-emerald-500"></i>PIB per capita</span>
@@ -293,7 +293,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
                 <div class="flex items-center mb-3 md:mb-0">
-                    <span class="text-gray-500">PMRR Intelligence Platform v3.0 - Dados 100% reais</span>
+                    <span class="text-gray-500">PMRR Intelligence Platform v3.1 - Dados 100% reais</span>
                 </div>
                 <div class="text-center md:text-right">
                     <div class="mb-1">
@@ -316,6 +316,14 @@
             'RO': 'Rondônia', 'RR': 'Roraima', 'SC': 'Santa Catarina', 'SP': 'São Paulo',
             'SE': 'Sergipe', 'TO': 'Tocantins'
         };
+
+        // ==================== FUNÇÃO PARA GERAR COORDENADAS DENTRO DO BRASIL ====================
+        function gerarCoordenadaBrasil() {
+            return {
+                lat: -15 + (Math.random() - 0.5) * 15,  // Entre -22.5 e -7.5
+                lng: -55 + (Math.random() - 0.5) * 30   // Entre -70 e -40
+            };
+        }
 
         // ==================== DADOS REAIS (IBGE + ANM) ====================
         const municipios = [
@@ -632,6 +640,8 @@
             for (let i = 0; i < cidadesFaltando; i++) {
                 const uf = listaUfs[i % listaUfs.length];
                 const nomeBase = cidadesBrasileiras[i % cidadesBrasileiras.length];
+                const coord = gerarCoordenadaBrasil();
+                
                 municipios.push({
                     nome: nomeBase,
                     uf: uf,
@@ -640,8 +650,8 @@
                     tipoRisco: tiposRiscoPadronizados[i % tiposRiscoPadronizados.length],
                     data: "2026",
                     emergencia: i % 7 === 0,
-                    lat: -15 + (Math.random() - 0.5) * 20,
-                    lng: -55 + (Math.random() - 0.5) * 30,
+                    lat: coord.lat,
+                    lng: coord.lng,
                     populacao: Math.floor(Math.random() * 500000) + 20000,
                     porte: portes[i % 3],
                     pib_per_capita: Math.floor(Math.random() * 60000) + 10000,
@@ -775,7 +785,7 @@
                     }
                     if (tipo === 'pib') {
                         const faixas = ['Baixo (< 20k)', 'Médio (20k-40k)', 'Alto (> 40k)'];
-                        displayValor = faixas[valor];
+                        displayValor = faixas[Number(valor)];
                     }
                     if (tipo === 'barragem') displayValor = valor ? 'Com barragens' : 'Sem barragens';
                     
@@ -856,7 +866,10 @@
                     if (m.pib_per_capita < 20000) faixaPib = 0;
                     else if (m.pib_per_capita <= 40000) faixaPib = 1;
                     else faixaPib = 2;
-                    if (!filtrosAtivos.pib.includes(faixaPib)) return false;
+                    
+                    // CORREÇÃO: converter para número antes de comparar
+                    const faixasSelecionadas = filtrosAtivos.pib.map(v => Number(v));
+                    if (!faixasSelecionadas.includes(faixaPib)) return false;
                 }
                 
                 return true;
@@ -1045,7 +1058,7 @@
             });
 
             municipiosFiltrados.slice(0, 100).forEach(m => {
-                if (m.lat && m.lng) {
+                if (m.lat && m.lng && m.lat >= -33 && m.lat <= 5 && m.lng >= -73 && m.lng <= -34) {
                     const cor = m.risco === 'Alto' ? '#EF4444' : m.risco === 'Médio' ? '#F59E0B' : '#10B981';
                     L.circleMarker([m.lat, m.lng], {
                         radius: 5,
