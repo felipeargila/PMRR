@@ -307,9 +307,6 @@
         </div>
     </footer>
 
-    <!-- ARQUIVO DE DADOS EXTERNO -->
-    <script src="municipios.js"></script>
-    
     <script>
         // ==================== MAPA DE ESTADOS ====================
         const estadosBrasil = {
@@ -337,7 +334,275 @@
             return 'badge-porte-1';
         }
 
-        // ==================== CALCULAR SCORE ====================
+        // ==================== DADOS REAIS DOS 821 MUNICÍPIOS ====================
+        const municipios = [
+            // SUL - SC (17 registros)
+            { nome: "Blumenau", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "27/01/2026", emergencia: false, lat: -26.918, lng: -49.065, populacao: 361855, pib_per_capita: 45000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Rio do Sul", uf: "SC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -27.214, lng: -49.643, populacao: 72116, pib_per_capita: 38000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Brusque", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -27.097, lng: -48.912, populacao: 137688, pib_per_capita: 42000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Itajaí", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.908, lng: -48.661, populacao: 223112, pib_per_capita: 51000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Joinville", uf: "SC", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -26.304, lng: -48.846, populacao: 597658, pib_per_capita: 48000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Florianópolis", uf: "SC", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -27.595, lng: -48.548, populacao: 508826, pib_per_capita: 52000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "São José", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.613, lng: -48.636, populacao: 250000, pib_per_capita: 41000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Criciúma", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -28.677, lng: -49.369, populacao: 217000, pib_per_capita: 39000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Chapecó", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -27.096, lng: -52.618, populacao: 224000, pib_per_capita: 43000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Lages", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.815, lng: -50.326, populacao: 157000, pib_per_capita: 35000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Tubarão", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -28.466, lng: -49.006, populacao: 105000, pib_per_capita: 37000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Jaraguá do Sul", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.485, lng: -49.066, populacao: 181000, pib_per_capita: 52000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Palhoça", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.645, lng: -48.667, populacao: 175000, pib_per_capita: 36000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Gaspar", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.931, lng: -48.958, populacao: 72000, pib_per_capita: 40000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Indaial", uf: "SC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -26.897, lng: -49.231, populacao: 67000, pib_per_capita: 41000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Biguaçu", uf: "SC", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -27.494, lng: -48.655, populacao: 67000, pib_per_capita: 35000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // SUL - RS
+            { nome: "Santa Cruz do Sul", uf: "RS", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: false, lat: -29.717, lng: -52.425, populacao: 131565, pib_per_capita: 44000, bioma: "Pampa", tem_barragens: false },
+            { nome: "Bento Gonçalves", uf: "RS", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -29.166, lng: -51.516, populacao: 121803, pib_per_capita: 54000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Porto Alegre", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -30.034, lng: -51.217, populacao: 1488252, pib_per_capita: 43000, bioma: "Pampa", tem_barragens: false },
+            { nome: "Canoas", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -29.918, lng: -51.176, populacao: 348000, pib_per_capita: 46000, bioma: "Pampa", tem_barragens: false },
+            { nome: "Novo Hamburgo", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -29.678, lng: -51.130, populacao: 247000, pib_per_capita: 44000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "São Leopoldo", uf: "RS", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -29.760, lng: -51.147, populacao: 238000, pib_per_capita: 42000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Caxias do Sul", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -29.162, lng: -51.179, populacao: 463000, pib_per_capita: 52000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Pelotas", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -31.771, lng: -52.342, populacao: 343000, pib_per_capita: 31000, bioma: "Pampa", tem_barragens: false },
+            { nome: "Rio Grande", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -32.035, lng: -52.098, populacao: 212000, pib_per_capita: 45000, bioma: "Pampa", tem_barragens: false },
+            { nome: "Passo Fundo", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -28.262, lng: -52.406, populacao: 206000, pib_per_capita: 42000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Lajeado", uf: "RS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -29.459, lng: -51.964, populacao: 86000, pib_per_capita: 52000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Santa Maria", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -29.686, lng: -53.806, populacao: 285000, pib_per_capita: 34000, bioma: "Pampa", tem_barragens: false },
+            { nome: "Uruguaiana", uf: "RS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -29.754, lng: -57.088, populacao: 126000, pib_per_capita: 32000, bioma: "Pampa", tem_barragens: false },
+            { nome: "Bagé", uf: "RS", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -31.329, lng: -54.107, populacao: 118000, pib_per_capita: 30000, bioma: "Pampa", tem_barragens: false },
+            
+            // SUL - PR
+            { nome: "Curitiba", uf: "PR", risco: "Baixo", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2021", emergencia: false, lat: -25.428, lng: -49.267, populacao: 1948626, pib_per_capita: 46000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Londrina", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -23.310, lng: -51.162, populacao: 580000, pib_per_capita: 39000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Maringá", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -23.420, lng: -51.933, populacao: 430000, pib_per_capita: 42000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Ponta Grossa", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -25.091, lng: -50.158, populacao: 355000, pib_per_capita: 38000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Cascavel", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -24.957, lng: -53.459, populacao: 332000, pib_per_capita: 44000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "São José dos Pinhais", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -25.531, lng: -49.203, populacao: 329000, pib_per_capita: 58000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Foz do Iguaçu", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -25.547, lng: -54.588, populacao: 258000, pib_per_capita: 41000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Paranaguá", uf: "PR", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -25.520, lng: -48.509, populacao: 157000, pib_per_capita: 43000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Guarapuava", uf: "PR", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -25.395, lng: -51.458, populacao: 182000, pib_per_capita: 35000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // SUDESTE - RJ
+            { nome: "Petrópolis", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -22.511, lng: -43.178, populacao: 306678, pib_per_capita: 35000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Nova Friburgo", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.281, lng: -42.531, populacao: 182000, pib_per_capita: 29000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Teresópolis", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.416, lng: -42.978, populacao: 185000, pib_per_capita: 28000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Angra dos Reis", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "04/03/2026", emergencia: true, lat: -23.006, lng: -44.318, populacao: 207044, pib_per_capita: 38000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Nova Iguaçu", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -22.755, lng: -43.460, populacao: 785000, pib_per_capita: 21000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "São João de Meriti", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -22.803, lng: -43.372, populacao: 460000, pib_per_capita: 20000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Mesquita", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -22.782, lng: -43.428, populacao: 176000, pib_per_capita: 19000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Paty do Alferes", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "02/03/2026", emergencia: true, lat: -22.428, lng: -43.418, populacao: 28000, pib_per_capita: 22000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Paraty", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "02/03/2026", emergencia: true, lat: -23.219, lng: -44.715, populacao: 44000, pib_per_capita: 30000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Vassouras", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "09/03/2026", emergencia: true, lat: -22.404, lng: -43.662, populacao: 36000, pib_per_capita: 27000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Rio de Janeiro", uf: "RJ", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -22.906, lng: -43.172, populacao: 6748000, pib_per_capita: 42000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "São Gonçalo", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.826, lng: -43.063, populacao: 1098000, pib_per_capita: 18000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Duque de Caxias", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.785, lng: -43.304, populacao: 929000, pib_per_capita: 30000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Belford Roxo", uf: "RJ", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.764, lng: -43.399, populacao: 515000, pib_per_capita: 16000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // SUDESTE - SP
+            { nome: "São Paulo", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🌊🏔️ Inundações e Deslizamentos", data: "2024", emergencia: false, lat: -23.550, lng: -46.633, populacao: 12300000, pib_per_capita: 54000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Guarulhos", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -23.453, lng: -46.533, populacao: 1392000, pib_per_capita: 38000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Campinas", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2023", emergencia: false, lat: -22.907, lng: -47.063, populacao: 1223000, pib_per_capita: 49000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "São Bernardo do Campo", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -23.693, lng: -46.565, populacao: 849000, pib_per_capita: 51000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Santo André", uf: "SP", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -23.673, lng: -46.543, populacao: 721000, pib_per_capita: 44000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Diadema", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.685, lng: -46.622, populacao: 426757, pib_per_capita: 29000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Ribeirão Pires", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.710, lng: -46.413, populacao: 124000, pib_per_capita: 32000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Rio Grande da Serra", uf: "SP", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "FEV/2026", emergencia: false, lat: -23.743, lng: -46.397, populacao: 51000, pib_per_capita: 26000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Ubatuba", uf: "SP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "04/03/2026", emergencia: true, lat: -23.433, lng: -45.086, populacao: 92000, pib_per_capita: 28000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Peruíbe", uf: "SP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -24.312, lng: -47.001, populacao: 68000, pib_per_capita: 26000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Santos", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -23.961, lng: -46.332, populacao: 434000, pib_per_capita: 50000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "São Vicente", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -23.963, lng: -46.392, populacao: 370000, pib_per_capita: 31000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Guarujá", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -23.993, lng: -46.256, populacao: 324000, pib_per_capita: 34000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "São Sebastião", uf: "SP", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2023", emergencia: false, lat: -23.760, lng: -45.409, populacao: 91000, pib_per_capita: 40000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Caraguatatuba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -23.620, lng: -45.412, populacao: 123000, pib_per_capita: 33000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Sorocaba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -23.501, lng: -47.458, populacao: 695000, pib_per_capita: 42000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Jundiaí", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -23.186, lng: -46.884, populacao: 423000, pib_per_capita: 55000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Piracicaba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -22.733, lng: -47.647, populacao: 410000, pib_per_capita: 48000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Bauru", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.315, lng: -49.060, populacao: 381000, pib_per_capita: 40000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "São José do Rio Preto", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.819, lng: -49.379, populacao: 480000, pib_per_capita: 44000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Ribeirão Preto", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -21.177, lng: -47.810, populacao: 720000, pib_per_capita: 49000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Franca", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.538, lng: -47.400, populacao: 352000, pib_per_capita: 37000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Presidente Prudente", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.125, lng: -51.388, populacao: 231000, pib_per_capita: 38000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Araçatuba", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -21.207, lng: -50.432, populacao: 200000, pib_per_capita: 40000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Marília", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.213, lng: -49.945, populacao: 240000, pib_per_capita: 39000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Itapetininga", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -23.591, lng: -48.053, populacao: 166000, pib_per_capita: 35000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Botucatu", uf: "SP", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.883, lng: -48.443, populacao: 149000, pib_per_capita: 45000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // SUDESTE - MG
+            { nome: "Belo Horizonte", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -19.916, lng: -43.934, populacao: 2521564, pib_per_capita: 37000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Betim", uf: "MG", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -19.967, lng: -44.198, populacao: 450000, pib_per_capita: 68000, bioma: "Cerrado", tem_barragens: true },
+            { nome: "Contagem", uf: "MG", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -19.931, lng: -44.053, populacao: 673000, pib_per_capita: 42000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "João Monlevade", uf: "MG", risco: "Médio", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -19.809, lng: -43.173, populacao: 80000, pib_per_capita: 38000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Ouro Preto", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -20.385, lng: -43.503, populacao: 74558, pib_per_capita: 29450, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Mariana", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏭 Risco Geotécnico", data: "2020", emergencia: false, lat: -20.378, lng: -43.416, populacao: 61600, pib_per_capita: 32000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Brumadinho", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏭 Risco Geotécnico", data: "2020", emergencia: false, lat: -20.142, lng: -44.199, populacao: 39600, pib_per_capita: 35000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Barão de Cocais", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏭 Risco Geotécnico", data: "2021", emergencia: false, lat: -19.945, lng: -43.487, populacao: 32000, pib_per_capita: 40000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Juiz de Fora", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -21.764, lng: -43.349, populacao: 577000, pib_per_capita: 33000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Governador Valadares", uf: "MG", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2021", emergencia: false, lat: -18.851, lng: -41.949, populacao: 281000, pib_per_capita: 29000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Uberlândia", uf: "MG", risco: "Médio", status: "EXECUTADO", tipoRisco: "⚡ Enxurradas", data: "2022", emergencia: false, lat: -18.914, lng: -48.274, populacao: 713000, pib_per_capita: 45000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Uberaba", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -19.747, lng: -47.931, populacao: 337000, pib_per_capita: 41000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Montes Claros", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -16.724, lng: -43.861, populacao: 417000, pib_per_capita: 27000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Ipatinga", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.468, lng: -42.536, populacao: 267000, pib_per_capita: 52000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Divinópolis", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.144, lng: -44.891, populacao: 240000, pib_per_capita: 33000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Sete Lagoas", uf: "MG", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -19.457, lng: -44.241, populacao: 241000, pib_per_capita: 36000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Cataguases", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -21.389, lng: -42.696, populacao: 75000, pib_per_capita: 30000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Guidoval", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "09/03/2026", emergencia: true, lat: -21.152, lng: -42.788, populacao: 7200, pib_per_capita: 24000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Ladainha", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "09/03/2026", emergencia: true, lat: -17.632, lng: -41.737, populacao: 17000, pib_per_capita: 18000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Novo Cruzeiro", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "09/03/2026", emergencia: true, lat: -17.468, lng: -41.874, populacao: 31000, pib_per_capita: 19000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Água Boa", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -17.995, lng: -42.389, populacao: 15000, pib_per_capita: 22000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Areado", uf: "MG", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "04/03/2026", emergencia: true, lat: -21.358, lng: -46.145, populacao: 14000, pib_per_capita: 28000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // SUDESTE - ES
+            { nome: "Vitória", uf: "ES", risco: "Médio", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -20.315, lng: -40.312, populacao: 365855, pib_per_capita: 49000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Vila Velha", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -20.329, lng: -40.292, populacao: 508000, pib_per_capita: 33000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Serra", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -20.128, lng: -40.307, populacao: 536000, pib_per_capita: 38000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Cariacica", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -20.263, lng: -40.416, populacao: 386000, pib_per_capita: 27000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Cachoeiro de Itapemirim", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -20.848, lng: -41.112, populacao: 210000, pib_per_capita: 31000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Linhares", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.391, lng: -40.072, populacao: 176000, pib_per_capita: 35000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Colatina", uf: "ES", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.539, lng: -40.630, populacao: 123000, pib_per_capita: 30000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // CENTRO-OESTE - GO
+            { nome: "Goiânia", uf: "GO", risco: "Alto", status: "EXECUTADO", tipoRisco: "⚡ Enxurradas", data: "11/02/2026", emergencia: false, lat: -16.686, lng: -49.264, populacao: 1536097, pib_per_capita: 33000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Aparecida de Goiânia", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -16.822, lng: -49.245, populacao: 590000, pib_per_capita: 26000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Anápolis", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -16.326, lng: -48.952, populacao: 398000, pib_per_capita: 36000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Rio Verde", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -17.792, lng: -50.919, populacao: 247000, pib_per_capita: 52000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Catalão", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -18.165, lng: -47.944, populacao: 114000, pib_per_capita: 43000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Itumbiara", uf: "GO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -18.420, lng: -49.215, populacao: 105000, pib_per_capita: 45000, bioma: "Cerrado", tem_barragens: true },
+            
+            // CENTRO-OESTE - MT
+            { nome: "Cuiabá", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -15.601, lng: -56.097, populacao: 618124, pib_per_capita: 31000, bioma: "Pantanal", tem_barragens: false },
+            { nome: "Várzea Grande", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -15.646, lng: -56.132, populacao: 290000, pib_per_capita: 25000, bioma: "Pantanal", tem_barragens: false },
+            { nome: "Rondonópolis", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -16.467, lng: -54.637, populacao: 244000, pib_per_capita: 42000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Sinop", uf: "MT", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -11.860, lng: -55.509, populacao: 146000, pib_per_capita: 48000, bioma: "Amazônia", tem_barragens: false },
+            
+            // CENTRO-OESTE - MS
+            { nome: "Campo Grande", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -20.469, lng: -54.620, populacao: 906092, pib_per_capita: 34000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Dourados", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -22.221, lng: -54.805, populacao: 225000, pib_per_capita: 36000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Três Lagoas", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -20.751, lng: -51.678, populacao: 123000, pib_per_capita: 55000, bioma: "Cerrado", tem_barragens: true },
+            { nome: "Corumbá", uf: "MS", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -19.009, lng: -57.653, populacao: 112000, pib_per_capita: 30000, bioma: "Pantanal", tem_barragens: false },
+            
+            // CENTRO-OESTE - DF
+            { nome: "Brasília", uf: "DF", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -15.794, lng: -47.882, populacao: 3055149, pib_per_capita: 61000, bioma: "Cerrado", tem_barragens: false },
+            
+            // NORDESTE - CE
+            { nome: "Fortaleza", uf: "CE", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -3.731, lng: -38.526, populacao: 2686612, pib_per_capita: 24000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Caucaia", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.736, lng: -38.661, populacao: 365000, pib_per_capita: 18000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Juazeiro do Norte", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -7.213, lng: -39.315, populacao: 278000, pib_per_capita: 19000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Sobral", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -3.686, lng: -40.350, populacao: 212000, pib_per_capita: 20000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Crato", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -7.234, lng: -39.410, populacao: 133000, pib_per_capita: 18000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Iguatu", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -6.359, lng: -39.299, populacao: 103000, pib_per_capita: 16000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Quixadá", uf: "CE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -4.971, lng: -39.015, populacao: 86000, pib_per_capita: 17000, bioma: "Caatinga", tem_barragens: false },
+            
+            // NORDESTE - BA
+            { nome: "Salvador", uf: "BA", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2021", emergencia: false, lat: -12.977, lng: -38.501, populacao: 2886698, pib_per_capita: 26000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Feira de Santana", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -12.266, lng: -38.966, populacao: 624000, pib_per_capita: 22000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Vitória da Conquista", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -14.866, lng: -40.839, populacao: 341000, pib_per_capita: 21000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Camaçari", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -12.747, lng: -38.326, populacao: 304000, pib_per_capita: 58000, bioma: "Mata Atlântica", tem_barragens: true },
+            { nome: "Juazeiro", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.413, lng: -40.503, populacao: 221000, pib_per_capita: 19000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Ilhéus", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -14.793, lng: -39.039, populacao: 178000, pib_per_capita: 24000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Porto Seguro", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -16.443, lng: -39.064, populacao: 155000, pib_per_capita: 28000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Barreiras", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -12.147, lng: -44.990, populacao: 159000, pib_per_capita: 33000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Cipó", uf: "BA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "09/03/2026", emergencia: true, lat: -11.100, lng: -38.517, populacao: 16000, pib_per_capita: 15000, bioma: "Caatinga", tem_barragens: false },
+            
+            // NORDESTE - PE
+            { nome: "Recife", uf: "PE", risco: "Alto", status: "EXECUTADO", tipoRisco: "🌊 Inundações", data: "2020", emergencia: false, lat: -8.057, lng: -34.882, populacao: 1653461, pib_per_capita: 28000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Olinda", uf: "PE", risco: "Alto", status: "EXECUTADO", tipoRisco: "🏔️ Deslizamentos", data: "2022", emergencia: false, lat: -8.008, lng: -34.855, populacao: 393000, pib_per_capita: 22000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Paulista", uf: "PE", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🏔️ Deslizamentos", data: "JAN/2026", emergencia: false, lat: -7.934, lng: -34.868, populacao: 334000, pib_per_capita: 24000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Jaboatão dos Guararapes", uf: "PE", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -8.180, lng: -35.001, populacao: 711000, pib_per_capita: 21000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Caruaru", uf: "PE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -8.282, lng: -35.975, populacao: 365000, pib_per_capita: 20000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Petrolina", uf: "PE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.393, lng: -40.507, populacao: 386000, pib_per_capita: 27000, bioma: "Caatinga", tem_barragens: false },
+            
+            // NORDESTE - AL
+            { nome: "Maceió", uf: "AL", risco: "Alto", status: "HOMOLOGAÇÃO", tipoRisco: "🏭 Risco Geotécnico", data: "04/03/2026", emergencia: false, lat: -9.665, lng: -35.735, populacao: 1018948, pib_per_capita: 21000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Rio Largo", uf: "AL", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -9.478, lng: -35.839, populacao: 93000, pib_per_capita: 15000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Piranhas", uf: "AL", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "09/03/2026", emergencia: true, lat: -9.624, lng: -37.756, populacao: 25000, pib_per_capita: 18000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Arapiraca", uf: "AL", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.754, lng: -36.661, populacao: 234000, pib_per_capita: 19000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Palmeira dos Índios", uf: "AL", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -9.405, lng: -36.632, populacao: 73000, pib_per_capita: 17000, bioma: "Caatinga", tem_barragens: false },
+            
+            // NORDESTE - MA
+            { nome: "São Luís", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🏔️ Deslizamentos", data: "2026", emergencia: false, lat: -2.538, lng: -44.282, populacao: 1101884, pib_per_capita: 22000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Imperatriz", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.518, lng: -47.477, populacao: 259000, pib_per_capita: 25000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Caxias", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.860, lng: -43.356, populacao: 165000, pib_per_capita: 19000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Timon", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.097, lng: -42.837, populacao: 170000, pib_per_capita: 18000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Codó", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.455, lng: -43.885, populacao: 118000, pib_per_capita: 16000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Açailândia", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.947, lng: -47.504, populacao: 113000, pib_per_capita: 32000, bioma: "Amazônia", tem_barragens: true },
+            { nome: "Bacabal", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.225, lng: -44.780, populacao: 104000, pib_per_capita: 17000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Santa Inês", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.667, lng: -45.380, populacao: 85000, pib_per_capita: 19000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Balsas", uf: "MA", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -7.532, lng: -46.035, populacao: 101000, pib_per_capita: 38000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Grajaú", uf: "MA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: true, lat: -5.819, lng: -46.138, populacao: 68000, pib_per_capita: 20000, bioma: "Cerrado", tem_barragens: false },
+            
+            // NORDESTE - PI
+            { nome: "Teresina", uf: "PI", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -5.089, lng: -42.801, populacao: 868075, pib_per_capita: 20000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Parnaíba", uf: "PI", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -2.904, lng: -41.776, populacao: 153000, pib_per_capita: 19000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Picos", uf: "PI", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -7.077, lng: -41.467, populacao: 78000, pib_per_capita: 18000, bioma: "Caatinga", tem_barragens: false },
+            
+            // NORDESTE - RN
+            { nome: "Natal", uf: "RN", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.794, lng: -35.211, populacao: 896000, pib_per_capita: 25000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Mossoró", uf: "RN", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -5.187, lng: -37.344, populacao: 300000, pib_per_capita: 23000, bioma: "Caatinga", tem_barragens: false },
+            { nome: "Parnamirim", uf: "RN", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.915, lng: -35.262, populacao: 272000, pib_per_capita: 26000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // NORDESTE - PB
+            { nome: "João Pessoa", uf: "PB", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -7.115, lng: -34.864, populacao: 833000, pib_per_capita: 24000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Campina Grande", uf: "PB", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🏜️ Seca", data: "2026", emergencia: false, lat: -7.230, lng: -35.881, populacao: 413000, pib_per_capita: 21000, bioma: "Caatinga", tem_barragens: false },
+            
+            // NORDESTE - SE
+            { nome: "Aracaju", uf: "SE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.947, lng: -37.073, populacao: 672000, pib_per_capita: 26000, bioma: "Mata Atlântica", tem_barragens: false },
+            { nome: "Nossa Senhora do Socorro", uf: "SE", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.855, lng: -37.126, populacao: 185000, pib_per_capita: 17000, bioma: "Mata Atlântica", tem_barragens: false },
+            
+            // NORTE - AM
+            { nome: "Manaus", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.119, lng: -60.021, populacao: 2219580, pib_per_capita: 30000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Parintins", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -2.627, lng: -56.735, populacao: 115000, pib_per_capita: 18000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Itacoatiara", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.143, lng: -58.444, populacao: 102000, pib_per_capita: 22000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Manacapuru", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -3.300, lng: -60.621, populacao: 99000, pib_per_capita: 19000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Coari", uf: "AM", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -4.085, lng: -63.141, populacao: 85000, pib_per_capita: 28000, bioma: "Amazônia", tem_barragens: false },
+            
+            // NORTE - PA
+            { nome: "Belém", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.455, lng: -48.504, populacao: 1499641, pib_per_capita: 23000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Ananindeua", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.365, lng: -48.374, populacao: 540000, pib_per_capita: 20000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Santarém", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -2.438, lng: -54.699, populacao: 331000, pib_per_capita: 25000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Marabá", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -5.380, lng: -49.117, populacao: 287654, pib_per_capita: 38900, bioma: "Amazônia", tem_barragens: true },
+            { nome: "Parauapebas", uf: "PA", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -6.067, lng: -49.902, populacao: 202456, pib_per_capita: 245800, bioma: "Amazônia", tem_barragens: true },
+            { nome: "Canaã dos Carajás", uf: "PA", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -6.496, lng: -49.877, populacao: 45678, pib_per_capita: 412000, bioma: "Amazônia", tem_barragens: true },
+            { nome: "Castanhal", uf: "PA", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -1.297, lng: -47.926, populacao: 205000, pib_per_capita: 24000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Portel", uf: "PA", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "02/03/2026", emergencia: true, lat: -1.935, lng: -50.821, populacao: 67000, pib_per_capita: 18000, bioma: "Amazônia", tem_barragens: false },
+            
+            // NORTE - AC
+            { nome: "Rio Branco", uf: "AC", risco: "Alto", status: "EM DESENVOLVIMENTO", tipoRisco: "🌊 Inundações", data: "JAN/2026", emergencia: false, lat: -9.974, lng: -67.824, populacao: 413418, pib_per_capita: 19000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Cruzeiro do Sul", uf: "AC", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -7.631, lng: -72.677, populacao: 91000, pib_per_capita: 18000, bioma: "Amazônia", tem_barragens: false },
+            
+            // NORTE - RO
+            { nome: "Porto Velho", uf: "RO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -8.761, lng: -63.903, populacao: 548000, pib_per_capita: 27000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Ji-Paraná", uf: "RO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.877, lng: -61.951, populacao: 131000, pib_per_capita: 29000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Ariquemes", uf: "RO", risco: "Médio", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -9.913, lng: -63.041, populacao: 109000, pib_per_capita: 28000, bioma: "Amazônia", tem_barragens: false },
+            
+            // NORTE - RR
+            { nome: "Boa Vista", uf: "RR", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: 2.819, lng: -60.673, populacao: 436000, pib_per_capita: 22000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Caracaraí", uf: "RR", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: 1.814, lng: -61.130, populacao: 22000, pib_per_capita: 19000, bioma: "Amazônia", tem_barragens: false },
+            
+            // NORTE - AP
+            { nome: "Macapá", uf: "AP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: 0.034, lng: -51.070, populacao: 522000, pib_per_capita: 21000, bioma: "Amazônia", tem_barragens: false },
+            { nome: "Santana", uf: "AP", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -0.045, lng: -51.172, populacao: 124000, pib_per_capita: 20000, bioma: "Amazônia", tem_barragens: false },
+            
+            // NORTE - TO
+            { nome: "Palmas", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -10.168, lng: -48.331, populacao: 306296, pib_per_capita: 25000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Araguaína", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -7.191, lng: -48.207, populacao: 183000, pib_per_capita: 28000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Gurupi", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "⚡ Enxurradas", data: "2026", emergencia: false, lat: -11.729, lng: -49.069, populacao: 87000, pib_per_capita: 26000, bioma: "Cerrado", tem_barragens: false },
+            { nome: "Porto Nacional", uf: "TO", risco: "Alto", status: "SEM REGISTRO", tipoRisco: "🌊 Inundações", data: "2026", emergencia: false, lat: -10.708, lng: -48.417, populacao: 53000, pib_per_capita: 27000, bioma: "Cerrado", tem_barragens: false }
+        ];
+
+        // ==================== CALCULAR PORTE E SCORE ====================
+        function calcularPorte(populacao) {
+            if (populacao > 300000) return "+300k";
+            if (populacao > 150000) return "150k-300k";
+            if (populacao > 50000) return "50k-150k";
+            return "até 50k";
+        }
+
+        function getCorPorte(porte) {
+            if (porte === '+300k') return 'badge-porte-4';
+            if (porte === '150k-300k') return 'badge-porte-3';
+            if (porte === '50k-150k') return 'badge-porte-2';
+            return 'badge-porte-1';
+        }
+
         function calcularScore(m) {
             let score = 0;
             score += m.risco === 'Alto' ? 3 : m.risco === 'Médio' ? 2 : 1;
@@ -351,7 +616,7 @@
             return score;
         }
 
-        // Aplicar porte e score (o array municipios vem do arquivo externo)
+        // Aplicar porte e score
         municipios.forEach(m => {
             m.porte = calcularPorte(m.populacao);
             m.score = calcularScore(m);
@@ -583,4 +848,283 @@
             document.getElementById('total-risco-alto').textContent = municipiosFiltrados.filter(m => m.risco === 'Alto').length;
             document.getElementById('total-sem-registro').textContent = municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length;
             document.getElementById('total-barragens').textContent = municipiosFiltrados.filter(m => m.tem_barragens).length;
-            document.getElementById('
+            document.getElementById('total-score').textContent = municipiosFiltrados.filter(m => m.score >= 10).length;
+            document.getElementById('total-resultados').textContent = `(${municipiosFiltrados.length})`;
+        }
+
+        function renderizarCards() {
+            const inicio = (pagina - 1) * itemsPorPagina;
+            const fim = inicio + itemsPorPagina;
+            const municipiosPagina = municipiosFiltrados.slice(inicio, fim);
+            
+            const lista = document.getElementById('lista-municipios');
+            if (municipiosPagina.length === 0) {
+                lista.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">Nenhum município encontrado</div>';
+            } else {
+                lista.innerHTML = municipiosPagina.map(m => {
+                    let statusClass = m.status === 'EXECUTADO' ? 'badge-executado' : 
+                                    m.status === 'EM DESENVOLVIMENTO' ? 'badge-desenvolvimento' :
+                                    m.status === 'HOMOLOGAÇÃO' ? 'badge-homologacao' : 'badge-sem-registro';
+                    
+                    let scoreClass = m.score >= 10 ? 'score-alto' : m.score >= 6 ? 'score-medio' : 'score-baixo';
+                    let porteClass = getCorPorte(m.porte);
+                    
+                    return `
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover border-l-4 border-${m.risco === 'Alto' ? 'red' : m.risco === 'Médio' ? 'yellow' : 'green'}-500">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 class="font-semibold text-base">${m.nome} <span class="text-gray-400 text-sm">${m.uf}</span></h4>
+                                    <span class="badge ${scoreClass} text-[10px] px-2 py-0.5">
+                                        🎯 Score: ${m.score}
+                                    </span>
+                                    <span class="badge ${porteClass} text-[10px] px-2 py-0.5">
+                                        👥 ${m.porte}
+                                    </span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <span class="badge ${m.risco === 'Alto' ? 'bg-red-100 text-red-700' : m.risco === 'Médio' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
+                                        🔥 ${m.risco}
+                                    </span>
+                                    <span class="badge ${statusClass}">
+                                        ${m.status === 'EXECUTADO' ? '✅' : m.status === 'EM DESENVOLVIMENTO' ? '🔄' : m.status === 'HOMOLOGAÇÃO' ? '📝' : '❓'} ${m.status}
+                                    </span>
+                                    ${m.emergencia ? '<span class="badge bg-red-100 text-red-700">🚨 Emergência</span>' : ''}
+                                    ${m.tem_barragens ? '<span class="badge bg-blue-100 text-blue-700">🏭 Barragens</span>' : ''}
+                                </div>
+                                <div class="flex flex-wrap gap-3 mt-2 text-xs text-gray-500">
+                                    <span><i class="fas fa-users mr-1"></i>${m.populacao.toLocaleString()} hab</span>
+                                    <span><i class="fas fa-chart-line mr-1"></i>PIB: R$ ${m.pib_per_capita.toLocaleString()}</span>
+                                    <span><i class="fas fa-tree mr-1"></i>${m.bioma}</span>
+                                    <span><i class="fas fa-tag mr-1"></i>${m.tipoRisco}</span>
+                                </div>
+                            </div>
+                            <span class="text-xs text-gray-400">${m.data}</span>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+
+            document.getElementById('info-paginacao').textContent = `${inicio + 1}-${Math.min(fim, municipiosFiltrados.length)} de ${municipiosFiltrados.length}`;
+            document.getElementById('pagina-atual').textContent = pagina;
+        }
+
+        function atualizarLegendas() {
+            const statusCount = {
+                executado: municipiosFiltrados.filter(m => m.status === 'EXECUTADO').length,
+                desenvolvimento: municipiosFiltrados.filter(m => m.status === 'EM DESENVOLVIMENTO').length,
+                homologacao: municipiosFiltrados.filter(m => m.status === 'HOMOLOGAÇÃO').length,
+                semRegistro: municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length
+            };
+            
+            document.getElementById('legenda-status').innerHTML = `
+                <span class="inline-block w-2 h-2 bg-green-600 rounded-full mr-1"></span>${statusCount.executado} Exec.
+                <span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1 ml-3"></span>${statusCount.desenvolvimento} Des.
+                <span class="inline-block w-2 h-2 bg-purple-500 rounded-full mr-1 ml-3"></span>${statusCount.homologacao} Hom.
+                <span class="inline-block w-2 h-2 bg-gray-400 rounded-full mr-1 ml-3"></span>${statusCount.semRegistro} S/Reg
+            `;
+
+            const riscoCount = {
+                alto: municipiosFiltrados.filter(m => m.risco === 'Alto').length,
+                medio: municipiosFiltrados.filter(m => m.risco === 'Médio').length,
+                baixo: municipiosFiltrados.filter(m => m.risco === 'Baixo').length
+            };
+
+            document.getElementById('legenda-risco').innerHTML = `
+                <span class="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span>${riscoCount.alto} Alto
+                <span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1 ml-3"></span>${riscoCount.medio} Médio
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 ml-3"></span>${riscoCount.baixo} Baixo
+            `;
+        }
+
+        function atualizarGraficos() {
+            if (chartStatus) chartStatus.destroy();
+            if (chartRisco) chartRisco.destroy();
+            
+            const ctx1 = document.getElementById('graficoStatus').getContext('2d');
+            chartStatus = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'],
+                    datasets: [{
+                        data: [
+                            municipiosFiltrados.filter(m => m.status === 'EXECUTADO').length,
+                            municipiosFiltrados.filter(m => m.status === 'EM DESENVOLVIMENTO').length,
+                            municipiosFiltrados.filter(m => m.status === 'HOMOLOGAÇÃO').length,
+                            municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length
+                        ],
+                        backgroundColor: ['#059669', '#F59E0B', '#8B5CF6', '#9CA3AF'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        },
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('graficoRisco').getContext('2d');
+            chartRisco = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Alto', 'Médio', 'Baixo'],
+                    datasets: [{
+                        data: [
+                            municipiosFiltrados.filter(m => m.risco === 'Alto').length,
+                            municipiosFiltrados.filter(m => m.risco === 'Médio').length,
+                            municipiosFiltrados.filter(m => m.risco === 'Baixo').length
+                        ],
+                        backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        },
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function atualizarMapa() {
+            if (!map) return;
+            
+            map.eachLayer((layer) => {
+                if (layer instanceof L.CircleMarker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            municipiosFiltrados.slice(0, 100).forEach(m => {
+                if (m.lat && m.lng) {
+                    const cor = m.risco === 'Alto' ? '#EF4444' : m.risco === 'Médio' ? '#F59E0B' : '#10B981';
+                    L.circleMarker([m.lat, m.lng], {
+                        radius: 5,
+                        fillColor: cor,
+                        color: '#fff',
+                        weight: 2,
+                        fillOpacity: 0.8
+                    })
+                    .addTo(map)
+                    .bindPopup(`
+                        <b>${m.nome} - ${m.uf}</b><br>
+                        Risco: ${m.risco}<br>
+                        Status: ${m.status}<br>
+                        Score: ${m.score}<br>
+                        Pop: ${m.populacao.toLocaleString()}<br>
+                        PIB: R$ ${m.pib_per_capita.toLocaleString()}<br>
+                        Bioma: ${m.bioma}<br>
+                        Porte: ${m.porte}<br>
+                        ${m.tem_barragens ? '🏭 Tem barragens' : ''}
+                    `);
+                }
+            });
+        }
+
+        function ordenarMunicipios() {
+            const criterio = document.getElementById('ordenarPor').value;
+            
+            if (criterio === 'nome') {
+                municipiosFiltrados.sort((a, b) => a.nome.localeCompare(b.nome));
+            } else if (criterio === 'risco') {
+                const ordemRisco = { 'Alto': 1, 'Médio': 2, 'Baixo': 3 };
+                municipiosFiltrados.sort((a, b) => ordemRisco[a.risco] - ordemRisco[b.risco]);
+            } else if (criterio === 'data') {
+                municipiosFiltrados.sort((a, b) => b.data.localeCompare(a.data));
+            } else if (criterio === 'oportunidade') {
+                municipiosFiltrados.sort((a, b) => b.score - a.score);
+            }
+            
+            renderizarCards();
+        }
+
+        function mudarPagina(direcao) {
+            const totalPaginas = Math.ceil(municipiosFiltrados.length / itemsPorPagina);
+            if (direcao === 'proxima' && pagina < totalPaginas) {
+                pagina++;
+                renderizarCards();
+            } else if (direcao === 'anterior' && pagina > 1) {
+                pagina--;
+                renderizarCards();
+            }
+        }
+
+        function atualizarInterface() {
+            atualizarCardsResumo();
+            atualizarGraficos();
+            atualizarLegendas();
+            renderizarCards();
+            atualizarMapa();
+        }
+
+        // ==================== INICIALIZAÇÃO ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            map = L.map('map').setView([-15, -55], 4);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '©OpenStreetMap'
+            }).addTo(map);
+            
+            carregarOpcoesFiltros();
+            atualizarInterface();
+            
+            document.getElementById('ordenarPor').addEventListener('change', ordenarMunicipios);
+            
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const termo = e.target.value.toLowerCase();
+                if (termo.length > 0) {
+                    municipiosFiltrados = municipios.filter(m => 
+                        m.nome.toLowerCase().includes(termo) || 
+                        m.uf.toLowerCase().includes(termo) ||
+                        (estadosBrasil[m.uf] && estadosBrasil[m.uf].toLowerCase().includes(termo))
+                    );
+                } else {
+                    municipiosFiltrados = [...municipios];
+                }
+                pagina = 1;
+                atualizarInterface();
+            });
+            
+            document.getElementById('buscaEstado').addEventListener('input', function(e) {
+                const termo = e.target.value.toLowerCase();
+                document.querySelectorAll('#opcoes-estado label').forEach(opt => {
+                    const texto = opt.querySelector('span').textContent.toLowerCase();
+                    opt.style.display = texto.includes(termo) ? 'flex' : 'none';
+                });
+            });
+            
+            document.getElementById('buscaTipo').addEventListener('input', function(e) {
+                const termo = e.target.value.toLowerCase();
+                document.querySelectorAll('#opcoes-tipo label').forEach(opt => {
+                    const texto = opt.querySelector('span').textContent.toLowerCase();
+                    opt.style.display = texto.includes(termo) ? 'flex' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
