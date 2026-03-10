@@ -1118,12 +1118,12 @@
             });
             
             document.getElementById('buscaTipo').addEventListener('input', function(e) {
-                const termo = e.target.value.toLowerCase();
-                document.querySelectorAll('#opcoes-tipo label').forEach(opt => {
-                    const texto = opt.querySelector('span').textContent.toLowerCase();
-                    opt.style.display = texto.includes(termo) ? 'flex' : 'none';
-                });
-            });
+    const termo = e.target.value.toLowerCase();
+    document.querySelectorAll('#opcoes-tipo label').forEach(opt => {
+        const texto = opt.querySelector('span').textContent.toLowerCase();
+        opt.style.display = texto.includes(termo) ? 'flex' : 'none';
+    });
+});
         });
     </script>
 </body>
