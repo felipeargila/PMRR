@@ -1,63 +1,586 @@
-<script src="municipios.js"></script>
-<script>
-    // ==================== MAPA DE ESTADOS ====================
-    const estadosBrasil = {
-        'AC': 'Acre', 'AL': 'Alagoas', 'AP': 'Amapá', 'AM': 'Amazonas', 'BA': 'Bahia',
-        'CE': 'Ceará', 'DF': 'Distrito Federal', 'ES': 'Espírito Santo', 'GO': 'Goiás',
-        'MA': 'Maranhão', 'MT': 'Mato Grosso', 'MS': 'Mato Grosso do Sul', 'MG': 'Minas Gerais',
-        'PA': 'Pará', 'PB': 'Paraíba', 'PR': 'Paraná', 'PE': 'Pernambuco', 'PI': 'Piauí',
-        'RJ': 'Rio de Janeiro', 'RN': 'Rio Grande do Norte', 'RS': 'Rio Grande do Sul',
-        'RO': 'Rondônia', 'RR': 'Roraima', 'SC': 'Santa Catarina', 'SP': 'São Paulo',
-        'SE': 'Sergipe', 'TO': 'Tocantins'
-    };
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braspowertech - PMRR Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        
+        .card-hover { transition: all 0.2s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+        
+        .badge { @apply px-2 py-1 rounded-full text-xs font-medium; }
+        .badge-executado { @apply bg-green-100 text-green-700; }
+        .badge-desenvolvimento { @apply bg-yellow-100 text-yellow-700; }
+        .badge-homologacao { @apply bg-purple-100 text-purple-700; }
+        .badge-sem-registro { @apply bg-gray-100 text-gray-700; }
+        .badge-porte-1 { @apply bg-green-100 text-green-700; }
+        .badge-porte-2 { @apply bg-yellow-100 text-yellow-700; }
+        .badge-porte-3 { @apply bg-orange-100 text-orange-700; }
+        .badge-porte-4 { @apply bg-red-100 text-red-700; }
+        
+        .filtro-card {
+            @apply bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-4;
+        }
+        .filtro-header {
+            @apply px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center cursor-pointer;
+        }
+        .filtro-header span {
+            @apply text-sm font-medium text-gray-700;
+        }
+        .filtro-content {
+            @apply p-4 max-h-96 overflow-y-auto;
+        }
+        .filtro-content label {
+            @apply flex items-center py-4 border-b border-gray-100 last:border-0;
+        }
+        .chip {
+            @apply inline-flex items-center bg-blue-100 text-blue-800 text-xs px-3 py-1.5 rounded-full mr-2 mb-2;
+        }
+        .chip-remover {
+            @apply ml-2 text-blue-600 hover:text-blue-800 cursor-pointer;
+        }
+        .filtro-checkbox {
+            @apply w-5 h-5 mr-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500;
+        }
+        
+        .tooltip {
+            @apply relative inline-block;
+        }
+        .tooltip .tooltip-text {
+            @apply invisible absolute z-20 bg-gray-900 text-white text-xs rounded-lg py-2 px-3 bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap shadow-lg;
+        }
+        .tooltip:hover .tooltip-text {
+            @apply visible;
+        }
 
-    // ==================== FUNÇÃO PARA CALCULAR PORTE ====================
-    function calcularPorte(populacao) {
-        if (populacao > 300000) return "+300k";
-        if (populacao > 150000) return "150k-300k";
-        if (populacao > 50000) return "50k-150k";
-        return "até 50k";
-    }
+        .score-alto { @apply bg-green-100 text-green-700; }
+        .score-medio { @apply bg-yellow-100 text-yellow-700; }
+        .score-baixo { @apply bg-red-100 text-red-700; }
+    </style>
+</head>
+<body class="bg-gray-50">
 
-    function getCorPorte(porte) {
-        if (porte === '+300k') return 'badge-porte-4';
-        if (porte === '150k-300k') return 'badge-porte-3';
-        if (porte === '50k-150k') return 'badge-porte-2';
-        return 'badge-porte-1';
-    }
+    <!-- HEADER MODO ESCURO -->
+    <div class="bg-blue-900 border-b border-blue-800 sticky top-0 z-10 shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+            <div class="flex justify-between items-center h-32">
+                <div class="flex items-center">
+                    <img src="https://braspowertech.com.br/wp-content/uploads/2023/01/bpt-selo-header_Prancheta-1-1.svg" 
+                         alt="Braspowertech" 
+                         class="h-20 w-auto"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 40\'%3E%3Cpath fill=\'%23FBBF24\' d=\'M20 8L4 32h32L20 8z\'/%3E%3Ctext x=\'45\' y=\'25\' font-family=\'Arial\' font-size=\'20\' font-weight=\'bold\' fill=\'white\'%3EBRASPOWER%3C/text%3E%3Ctext x=\'45\' y=\'42\' font-family=\'Arial\' font-size=\'14\' fill=\'%23FBBF24\'%3ETECH%3C/text%3E%3C/svg%3E';">
+                    <span class="ml-4 bg-yellow-400 text-blue-900 text-base px-4 py-2 rounded-full font-bold">PMRR Intelligence</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-yellow-400 text-base mr-4 hidden sm:inline">Designer</span>
+                    <div class="h-14 w-14 rounded-full bg-yellow-400 flex items-center justify-center">
+                        <span class="text-blue-900 font-medium text-xl">D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // ==================== CALCULAR PORTE E SCORE ====================
-    function calcularScore(m) {
-        let score = 0;
-        score += m.risco === 'Alto' ? 3 : m.risco === 'Médio' ? 2 : 1;
-        score += m.status === 'SEM REGISTRO' ? 3 : m.status === 'EM DESENVOLVIMENTO' ? 1 : 0;
-        score += m.emergencia ? 2 : 0;
-        score += m.tem_barragens ? 3 : 0;
-        if (m.porte === '+300k') score += 3;
-        else if (m.porte === '150k-300k') score += 2;
-        else if (m.porte === '50k-150k') score += 1;
-        score += m.pib_per_capita > 40000 ? 2 : 0;
-        return score;
-    }
+    <!-- BARRA DE BUSCA -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" placeholder="Buscar município, estado..." id="searchInput"
+                       class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+    </div>
 
-    // Aplicar porte e score
-    municipios.forEach(m => {
-        m.porte = calcularPorte(m.populacao);
-        m.score = calcularScore(m);
-    });
+    <!-- BOTÃO FILTROS MOBILE -->
+    <div class="lg:hidden bg-white px-4 py-3 border-b border-gray-200">
+        <button onclick="toggleFiltros()" id="btnToggleFiltros" class="w-full bg-blue-50 text-blue-700 text-sm py-3 rounded-lg flex items-center justify-center font-medium">
+            <i class="fas fa-sliders-h mr-2"></i> <span id="textoBotaoFiltros">Mostrar filtros</span>
+        </button>
+    </div>
 
-    console.log(`✅ Total de municípios carregados: ${municipios.length}`);
+    <!-- CHIPS DOS FILTROS ATIVOS -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 min-h-[50px]" id="container-chips"></div>
 
-    // ==================== ESTADO DA APLICAÇÃO ====================
-    let filtrosAtivos = { 
-        estados: [], riscos: [], status: [], tipos: [],
-        porte: [], pib: [], bioma: [], barragem: []
-    };
-    let municipiosFiltrados = [...municipios];
-    let pagina = 1;
-    const itemsPorPagina = 10;
-    let map;
-    let chartStatus, chartRisco;
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col lg:flex-row gap-6">
+            
+            <!-- SIDEBAR FILTROS -->
+            <div id="filtrosSidebar" class="lg:w-80 lg:sticky lg:top-24 hidden lg:block space-y-4" style="max-height: calc(100vh - 120px); overflow-y: auto;">
+                
+                <!-- FILTRO ESTADO -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('estado')">
+                        <span><i class="fas fa-map-pin mr-2 text-blue-500"></i>Estado</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-estado-content" class="filtro-content hidden">
+                        <input type="text" placeholder="Buscar estado..." class="w-full text-sm p-2 border border-gray-200 rounded-lg mb-3" id="buscaEstado">
+                        <div id="opcoes-estado" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO RISCO -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('risco')">
+                        <span><i class="fas fa-fire mr-2 text-orange-500"></i>Grau de Risco</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-risco-content" class="filtro-content hidden">
+                        <div id="opcoes-risco" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO STATUS -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('status')">
+                        <span><i class="fas fa-tag mr-2 text-purple-500"></i>Status PMRR</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-status-content" class="filtro-content hidden">
+                        <div id="opcoes-status" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO PORTE POPULACIONAL -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('porte')">
+                        <span><i class="fas fa-users mr-2 text-green-500"></i>Porte Populacional</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-porte-content" class="filtro-content hidden">
+                        <div id="opcoes-porte" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO PIB PER CAPITA -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('pib')">
+                        <span><i class="fas fa-chart-line mr-2 text-emerald-500"></i>PIB per capita</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-pib-content" class="filtro-content hidden">
+                        <div id="opcoes-pib" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO BIOMA -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('bioma')">
+                        <span><i class="fas fa-tree mr-2 text-green-600"></i>Bioma</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-bioma-content" class="filtro-content hidden">
+                        <div id="opcoes-bioma" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO BARRAGENS -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('barragem')">
+                        <span><i class="fas fa-water mr-2 text-blue-500"></i>Barragens</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-barragem-content" class="filtro-content hidden">
+                        <div id="opcoes-barragem" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- FILTRO TIPO DE RISCO -->
+                <div class="filtro-card">
+                    <div class="filtro-header" onclick="toggleFiltro('tipo')">
+                        <span><i class="fas fa-cloud-rain mr-2 text-blue-500"></i>Tipo de Risco</span>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div id="filtro-tipo-content" class="filtro-content hidden">
+                        <input type="text" placeholder="Buscar tipo..." class="w-full text-sm p-2 border border-gray-200 rounded-lg mb-3" id="buscaTipo">
+                        <div id="opcoes-tipo" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- BOTÕES -->
+                <div class="flex gap-3 mt-4">
+                    <button onclick="aplicarFiltros()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm py-3 rounded-lg transition font-medium">
+                        <i class="fas fa-check mr-2"></i>Aplicar
+                    </button>
+                    <button onclick="limparTodosFiltros()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm py-3 rounded-lg transition font-medium">
+                        Limpar
+                    </button>
+                </div>
+            </div>
+            
+            <!-- CONTEÚDO PRINCIPAL -->
+            <div class="flex-1 min-w-0">
+                
+                <!-- CARDS RESUMO -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
+                        <div class="text-xs text-gray-500 mb-1">Total</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-municipios">821</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
+                        <div class="text-xs text-gray-500 mb-1">Risco Alto</div>
+                        <div class="text-2xl font-bold text-red-600" id="total-risco-alto">0</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
+                        <div class="text-xs text-gray-500 mb-1">Sem Registro</div>
+                        <div class="text-2xl font-bold text-gray-600" id="total-sem-registro">0</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
+                        <div class="text-xs text-gray-500 mb-1">Com Barragens</div>
+                        <div class="text-2xl font-bold text-blue-600" id="total-barragens">0</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-4 card-hover">
+                        <div class="text-xs text-gray-500 mb-1">Score Alto</div>
+                        <div class="text-2xl font-bold text-green-600" id="total-score">0</div>
+                    </div>
+                </div>
+                
+                <!-- GRÁFICOS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="bg-white rounded-xl shadow-sm p-4">
+                        <canvas id="graficoStatus" height="150"></canvas>
+                        <div class="text-xs text-center text-gray-500 mt-3" id="legenda-status"></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-4">
+                        <canvas id="graficoRisco" height="150"></canvas>
+                        <div class="text-xs text-center text-gray-500 mt-3" id="legenda-risco"></div>
+                    </div>
+                </div>
+                
+                <!-- MAPA -->
+                <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+                    <div id="map" style="height: 280px; border-radius: 0.75rem;"></div>
+                </div>
+                
+                <!-- LISTAGEM -->
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-medium text-base flex items-center">
+                        <i class="fas fa-list mr-2 text-blue-500"></i>
+                        Resultados <span class="ml-1 text-sm text-gray-400" id="total-resultados">(821)</span>
+                    </h3>
+                    <select id="ordenarPor" class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white">
+                        <option value="nome">Ordem alfabética</option>
+                        <option value="risco">Maior risco</option>
+                        <option value="data">Mais recentes</option>
+                        <option value="oportunidade">Melhor oportunidade</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-3 max-h-[500px] overflow-y-auto pr-1" id="lista-municipios"></div>
+                
+                <!-- PAGINAÇÃO -->
+                <div class="flex justify-between items-center mt-4 text-sm">
+                    <span class="text-gray-500" id="info-paginacao"></span>
+                    <div class="flex space-x-2">
+                        <button onclick="mudarPagina('anterior')" class="px-3 py-1.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50">‹ Anterior</button>
+                        <span class="px-3 py-1.5 bg-blue-600 text-white rounded-lg" id="pagina-atual">1</span>
+                        <button onclick="mudarPagina('proxima')" class="px-3 py-1.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50">Próxima ›</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RODAPÉ -->
+    <footer class="bg-white border-t border-gray-200 mt-8 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <div class="flex items-center mb-3 md:mb-0">
+                    <span class="text-gray-500">PMRR Intelligence Platform - Dados 100% oficiais</span>
+                </div>
+                <div class="text-center md:text-right">
+                    <div class="mb-1">
+                        <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">Fontes: IBGE (2022) / ANM (2024) / SGB / MIDR</span>
+                    </div>
+                    <div>Desenvolvido por Braspowertech | Todos os direitos reservados. © 2026</div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-    // ... todo o resto do código IGUAL
-</script>
+    <!-- ARQUIVO DE DADOS EXTERNO -->
+    <script src="municipios.js"></script>
+    
+    <script>
+        // ==================== MAPA DE ESTADOS ====================
+        const estadosBrasil = {
+            'AC': 'Acre', 'AL': 'Alagoas', 'AP': 'Amapá', 'AM': 'Amazonas', 'BA': 'Bahia',
+            'CE': 'Ceará', 'DF': 'Distrito Federal', 'ES': 'Espírito Santo', 'GO': 'Goiás',
+            'MA': 'Maranhão', 'MT': 'Mato Grosso', 'MS': 'Mato Grosso do Sul', 'MG': 'Minas Gerais',
+            'PA': 'Pará', 'PB': 'Paraíba', 'PR': 'Paraná', 'PE': 'Pernambuco', 'PI': 'Piauí',
+            'RJ': 'Rio de Janeiro', 'RN': 'Rio Grande do Norte', 'RS': 'Rio Grande do Sul',
+            'RO': 'Rondônia', 'RR': 'Roraima', 'SC': 'Santa Catarina', 'SP': 'São Paulo',
+            'SE': 'Sergipe', 'TO': 'Tocantins'
+        };
+
+        // ==================== FUNÇÃO PARA CALCULAR PORTE ====================
+        function calcularPorte(populacao) {
+            if (populacao > 300000) return "+300k";
+            if (populacao > 150000) return "150k-300k";
+            if (populacao > 50000) return "50k-150k";
+            return "até 50k";
+        }
+
+        function getCorPorte(porte) {
+            if (porte === '+300k') return 'badge-porte-4';
+            if (porte === '150k-300k') return 'badge-porte-3';
+            if (porte === '50k-150k') return 'badge-porte-2';
+            return 'badge-porte-1';
+        }
+
+        // ==================== CALCULAR SCORE ====================
+        function calcularScore(m) {
+            let score = 0;
+            score += m.risco === 'Alto' ? 3 : m.risco === 'Médio' ? 2 : 1;
+            score += m.status === 'SEM REGISTRO' ? 3 : m.status === 'EM DESENVOLVIMENTO' ? 1 : 0;
+            score += m.emergencia ? 2 : 0;
+            score += m.tem_barragens ? 3 : 0;
+            if (m.porte === '+300k') score += 3;
+            else if (m.porte === '150k-300k') score += 2;
+            else if (m.porte === '50k-150k') score += 1;
+            score += m.pib_per_capita > 40000 ? 2 : 0;
+            return score;
+        }
+
+        // Aplicar porte e score (o array municipios vem do arquivo externo)
+        municipios.forEach(m => {
+            m.porte = calcularPorte(m.populacao);
+            m.score = calcularScore(m);
+        });
+
+        console.log(`✅ Total de municípios carregados: ${municipios.length}`);
+
+        // ==================== ESTADO DA APLICAÇÃO ====================
+        let filtrosAtivos = { 
+            estados: [], riscos: [], status: [], tipos: [],
+            porte: [], pib: [], bioma: [], barragem: []
+        };
+        let municipiosFiltrados = [...municipios];
+        let pagina = 1;
+        const itemsPorPagina = 10;
+        let map;
+        let chartStatus, chartRisco;
+
+        // ==================== FUNÇÕES DOS FILTROS ====================
+        function carregarOpcoesFiltros() {
+            // Estados
+            const ufs = [...new Set(municipios.map(m => m.uf))].sort();
+            document.getElementById('opcoes-estado').innerHTML = ufs.map(uf => `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="${uf}" onchange="selecionarFiltro('estados', this)">
+                    <span class="text-sm text-gray-700 flex-1">${estadosBrasil[uf]} (${uf})</span>
+                </label>
+            `).join('');
+
+            // Riscos
+            const riscos = ['Alto', 'Médio', 'Baixo'];
+            document.getElementById('opcoes-risco').innerHTML = riscos.map(risco => `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="${risco}" onchange="selecionarFiltro('riscos', this)">
+                    <span class="text-sm text-gray-700 flex items-center flex-1">
+                        <span class="w-2 h-2 ${risco === 'Alto' ? 'bg-red-500' : risco === 'Médio' ? 'bg-yellow-500' : 'bg-green-500'} rounded-full mr-2"></span> ${risco}
+                    </span>
+                </label>
+            `).join('');
+
+            // Status
+            const statusList = ['EXECUTADO', 'EM DESENVOLVIMENTO', 'HOMOLOGAÇÃO', 'SEM REGISTRO'];
+            document.getElementById('opcoes-status').innerHTML = statusList.map(status => `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="${status}" onchange="selecionarFiltro('status', this)">
+                    <span class="text-sm text-gray-700 flex-1">${status}</span>
+                </label>
+            `).join('');
+
+            // Porte
+            const portes = ['até 50k', '50k-150k', '150k-300k', '+300k'];
+            document.getElementById('opcoes-porte').innerHTML = portes.map(porte => `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="${porte}" onchange="selecionarFiltro('porte', this)">
+                    <span class="text-sm text-gray-700 flex-1">${porte}</span>
+                </label>
+            `).join('');
+
+            // PIB
+            const faixasPib = ['Baixo (< 20k)', 'Médio (20k-40k)', 'Alto (> 40k)'];
+            document.getElementById('opcoes-pib').innerHTML = faixasPib.map((faixa, idx) => `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="${idx}" onchange="selecionarFiltro('pib', this)">
+                    <span class="text-sm text-gray-700 flex-1">${faixa}</span>
+                </label>
+            `).join('');
+
+            // Bioma
+            const biomas = ['Amazônia', 'Cerrado', 'Mata Atlântica', 'Caatinga', 'Pampa', 'Pantanal'];
+            document.getElementById('opcoes-bioma').innerHTML = biomas.map(bioma => `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="${bioma}" onchange="selecionarFiltro('bioma', this)">
+                    <span class="text-sm text-gray-700 flex-1">${bioma}</span>
+                </label>
+            `).join('');
+
+            // Barragens
+            document.getElementById('opcoes-barragem').innerHTML = `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="true" onchange="selecionarFiltro('barragem', this)">
+                    <span class="text-sm text-gray-700 flex-1">Com barragens</span>
+                </label>
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="false" onchange="selecionarFiltro('barragem', this)">
+                    <span class="text-sm text-gray-700 flex-1">Sem barragens</span>
+                </label>
+            `;
+
+            // Tipos de Risco
+            const tiposRisco = [
+                '🌊 Inundações',
+                '🏔️ Deslizamentos',
+                '🌊🏔️ Inundações e Deslizamentos',
+                '⚡ Enxurradas',
+                '🏭 Risco Geotécnico',
+                '🏜️ Seca'
+            ];
+            document.getElementById('opcoes-tipo').innerHTML = tiposRisco.map(tipo => `
+                <label class="flex items-center py-4 border-b border-gray-100 last:border-0">
+                    <input type="checkbox" class="filtro-checkbox" value="${tipo}" onchange="selecionarFiltro('tipos', this)">
+                    <span class="text-sm text-gray-700 flex-1">${tipo}</span>
+                </label>
+            `).join('');
+        }
+
+        function selecionarFiltro(tipo, checkbox) {
+            const valor = checkbox.value === 'true' ? true : checkbox.value === 'false' ? false : checkbox.value;
+            if (checkbox.checked) {
+                filtrosAtivos[tipo].push(valor);
+            } else {
+                const index = filtrosAtivos[tipo].findIndex(v => String(v) === String(valor));
+                if (index > -1) filtrosAtivos[tipo].splice(index, 1);
+            }
+            atualizarChips();
+        }
+
+        function atualizarChips() {
+            const container = document.getElementById('container-chips');
+            let html = '<div class="flex flex-wrap items-center gap-2">';
+            
+            Object.keys(filtrosAtivos).forEach(tipo => {
+                filtrosAtivos[tipo].forEach(valor => {
+                    let displayValor = valor;
+                    if (tipo === 'estados' && estadosBrasil[valor]) {
+                        displayValor = `${estadosBrasil[valor]} (${valor})`;
+                    }
+                    if (tipo === 'pib') {
+                        const faixas = ['Baixo (< 20k)', 'Médio (20k-40k)', 'Alto (> 40k)'];
+                        displayValor = faixas[Number(valor)];
+                    }
+                    if (tipo === 'barragem') displayValor = valor ? 'Com barragens' : 'Sem barragens';
+                    
+                    html += `<span class="chip">
+                        ${displayValor} 
+                        <span class="chip-remover" onclick="removerFiltro('${tipo}', '${valor}')">
+                            <i class="fas fa-times"></i>
+                        </span>
+                    </span>`;
+                });
+            });
+            
+            if (Object.values(filtrosAtivos).flat().length > 0) {
+                html += `<span class="text-xs text-blue-600 ml-2 cursor-pointer hover:underline" onclick="limparTodosFiltros()">Limpar todos</span>`;
+            } else {
+                html += '<span class="text-xs text-gray-400">Nenhum filtro aplicado</span>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function removerFiltro(tipo, valor) {
+            const valorConvertido = valor === 'true' ? true : valor === 'false' ? false : valor;
+            const index = filtrosAtivos[tipo].findIndex(v => String(v) === String(valorConvertido));
+            if (index > -1) {
+                filtrosAtivos[tipo].splice(index, 1);
+                document.querySelectorAll('.filtro-checkbox').forEach(cb => {
+                    if (String(cb.value) === String(valor)) cb.checked = false;
+                });
+                atualizarChips();
+                aplicarFiltros();
+            }
+        }
+
+        function limparTodosFiltros() {
+            filtrosAtivos = { 
+                estados: [], riscos: [], status: [], tipos: [],
+                porte: [], pib: [], bioma: [], barragem: []
+            };
+            document.querySelectorAll('.filtro-checkbox').forEach(cb => cb.checked = false);
+            atualizarChips();
+            aplicarFiltros();
+        }
+
+        function toggleFiltro(tipo) {
+            const content = document.getElementById(`filtro-${tipo}-content`);
+            if (content) content.classList.toggle('hidden');
+        }
+
+        function toggleFiltros() {
+            const filtros = document.getElementById('filtrosSidebar');
+            const textoBotao = document.getElementById('textoBotaoFiltros');
+            
+            if (filtros.classList.contains('hidden')) {
+                filtros.classList.remove('hidden');
+                filtros.classList.add('block');
+                textoBotao.textContent = 'Ocultar filtros';
+            } else {
+                filtros.classList.add('hidden');
+                filtros.classList.remove('block');
+                textoBotao.textContent = 'Mostrar filtros';
+            }
+        }
+
+        function aplicarFiltros() {
+            municipiosFiltrados = municipios.filter(m => {
+                if (filtrosAtivos.estados.length > 0 && !filtrosAtivos.estados.includes(m.uf)) return false;
+                if (filtrosAtivos.riscos.length > 0 && !filtrosAtivos.riscos.includes(m.risco)) return false;
+                if (filtrosAtivos.status.length > 0 && !filtrosAtivos.status.includes(m.status)) return false;
+                if (filtrosAtivos.tipos.length > 0 && !filtrosAtivos.tipos.includes(m.tipoRisco)) return false;
+                if (filtrosAtivos.porte.length > 0 && !filtrosAtivos.porte.includes(m.porte)) return false;
+                if (filtrosAtivos.bioma.length > 0 && !filtrosAtivos.bioma.includes(m.bioma)) return false;
+                if (filtrosAtivos.barragem.length > 0 && !filtrosAtivos.barragem.includes(m.tem_barragens)) return false;
+                
+                if (filtrosAtivos.pib.length > 0) {
+                    let faixaPib = 0;
+                    if (m.pib_per_capita < 20000) faixaPib = 0;
+                    else if (m.pib_per_capita <= 40000) faixaPib = 1;
+                    else faixaPib = 2;
+                    
+                    const faixasSelecionadas = filtrosAtivos.pib.map(v => Number(v));
+                    if (!faixasSelecionadas.includes(faixaPib)) return false;
+                }
+                
+                return true;
+            });
+            
+            pagina = 1;
+            atualizarInterface();
+            if (window.innerWidth < 1024) {
+                document.getElementById('filtrosSidebar').classList.add('hidden');
+                document.getElementById('textoBotaoFiltros').textContent = 'Mostrar filtros';
+            }
+        }
+
+        // ==================== FUNÇÕES DE INTERFACE ====================
+        function atualizarCardsResumo() {
+            document.getElementById('total-municipios').textContent = municipiosFiltrados.length;
+            document.getElementById('total-risco-alto').textContent = municipiosFiltrados.filter(m => m.risco === 'Alto').length;
+            document.getElementById('total-sem-registro').textContent = municipiosFiltrados.filter(m => m.status === 'SEM REGISTRO').length;
+            document.getElementById('total-barragens').textContent = municipiosFiltrados.filter(m => m.tem_barragens).length;
+            document.getElementById('
