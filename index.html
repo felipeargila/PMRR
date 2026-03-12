@@ -112,6 +112,7 @@
               <option value="exposicao">Maior população em risco</option>
               <option value="barragens">Mais barragens</option>
               <option value="pib">Maior PIB per capita</option>
+              <option value="oportunidade">Melhor oportunidade</option>
             </select>
           </div>
 
@@ -154,6 +155,7 @@
               <option value="barragens">Mais barragens ativas</option>
               <option value="area">Maior área de lavra</option>
               <option value="emergencia">Com emergência primeiro</option>
+              <option value="oportunidade">Melhor oportunidade</option>
             </select>
           </div>
 
@@ -268,11 +270,9 @@ function getEstadoLabel(uf) {
 
 function normalizePMRRStatus(status) {
   const s = normalizeText(status);
-  if (!s || s.includes('sem registro')) return 'Sem PMRR';
-  if (s.includes('nao identificado')) return 'Não identificado';
+  if (!s || s.includes('sem registro') || s.includes('nao identificado')) return 'Sem PMRR';
   if (s.includes('disponivel') || s.includes('conclu') || s.includes('finalizado') || s.includes('executado') || s.includes('mapeamento')) return 'Concluído';
-  if (s.includes('campo') || s.includes('andamento')) return 'Em andamento';
-  if (s.includes('elabor')) return 'Em elaboração';
+  if (s.includes('campo') || s.includes('andamento') || s.includes('elabor')) return 'Em elaboração';
   return 'Sem PMRR';
 }
 
@@ -350,6 +350,51 @@ function normalizeBarragemPresence(value) {
   return Number(value || 0) > 0 ? 'Com barragem' : 'Sem barragem';
 }
 
+
+
+function getPMRROpportunity(m) {
+  const status = normalizePMRRStatus(m.status_pmrr || 'SEM REGISTRO');
+  let score = 0;
+  if (status === 'Sem PMRR') score += 3;
+  else if (status === 'Em elaboração') score += 1;
+  if ((m.pessoas_em_risco || 0) >= 20000) score += 3;
+  else if ((m.pessoas_em_risco || 0) >= 5000) score += 2;
+  else if ((m.pessoas_em_risco || 0) >= 1000) score += 1;
+  if (m.tem_barragens) score += 1;
+  if ((m.qtd_barragens || 0) >= 5) score += 1;
+  if ((m.populacao || 0) >= 150000) score += 1;
+  if (score >= 6) return 'Alta oportunidade';
+  if (score >= 3) return 'Média oportunidade';
+  return 'Baixa oportunidade';
+}
+
+function getMineradorasOpportunity(m) {
+  let score = 0;
+  const barragem = normalizeBarragemPresence(m.barragens_ativas);
+  const cri = normalizeSeverityLabel(m.cri_max);
+  const dpa = normalizeSeverityLabel(m.dpa_max);
+  const emerg = normalizeEmergencyLabel(m.nivel_emergencia);
+  if (barragem === 'Com barragem') score += 3;
+  else score += 1;
+  if (cri === 'Alta') score += 2;
+  else if (cri === 'Média') score += 1;
+  if (dpa === 'Alta') score += 2;
+  else if (dpa === 'Média') score += 1;
+  if (emerg.includes('Nível')) score += 2;
+  if ((m.area_total_ha || 0) >= 5000) score += 2;
+  else if ((m.area_total_ha || 0) >= 1000) score += 1;
+  if ((m.processos_lavra || 0) >= 10) score += 2;
+  else if ((m.processos_lavra || 0) >= 5) score += 1;
+  if (score >= 7) return 'Alta oportunidade';
+  if (score >= 4) return 'Média oportunidade';
+  return 'Baixa oportunidade';
+}
+
+function badgeForOpportunity(label) {
+  if (label === 'Alta oportunidade') return '<span class="badge bg-soft-red">Alta oportunidade</span>';
+  if (label === 'Média oportunidade') return '<span class="badge bg-soft-yellow">Média oportunidade</span>';
+  return '<span class="badge bg-soft-gray">Baixa oportunidade</span>';
+}
 
 function badgeForBarragemPresence(value) {
   const v = normalizeBarragemPresence(value);
@@ -450,7 +495,7 @@ function getMineradoraTags(item) {
 }
 
 function buildFilterSummary(title, count) {
-  return `${title}${count ? ` (${count})` : ''}`;
+  return `${title}`;
 }
 
 function loadCRM() {
@@ -669,7 +714,7 @@ function renderSidebar() {
       ${buildAccordionFilter('Estado', 'fa-map-pin', 'blue', estados.map(v => [v, getEstadoLabel(v)]), pmrrFiltros.estados, 'pmrr', 'estados')}
       ${buildAccordionFilter('Status PMRR', 'fa-tag', 'purple', status.map(v => [v, v]), pmrrFiltros.status, 'pmrr', 'status')}
       ${buildAccordionFilter('Tipo de risco', 'fa-cloud-rain', 'blue', tipos.map(v => [v, v]), pmrrFiltros.tipos, 'pmrr', 'tipos')}
-      ${buildAccordionFilter('Pessoas em risco', 'fa-users-viewfinder', 'red', pessoasRisco.map(v => [v, v]), pmrrFiltros.pessoasRisco, 'pmrr', 'pessoasRisco')}
+      ${buildAccordionFilter('Pessoas em risco', 'fa-triangle-exclamation', 'red', pessoasRisco.map(v => [v, v]), pmrrFiltros.pessoasRisco, 'pmrr', 'pessoasRisco')}
       ${buildAccordionFilter('Porte populacional', 'fa-users', 'green', porte.map(v => [v, v]), pmrrFiltros.porte, 'pmrr', 'porte')}
       ${buildAccordionFilter('PIB per capita', 'fa-chart-line', 'emerald', pib.map(v => [v, v]), pmrrFiltros.pib, 'pmrr', 'pib')}
       ${buildAccordionFilter('Barragens', 'fa-water', 'blue', [['sim', 'Com barragens'], ['nao', 'Sem barragens']], pmrrFiltros.barragem, 'pmrr', 'barragem')}
@@ -705,7 +750,7 @@ function buildAccordionFilter(title, icon, color, entries, selected, scope, key)
       <details class="filter-accordion">
         <summary class="filter-summary">
           <span><i class="fas ${icon} mr-2 text-${color}-500"></i>${buildFilterSummary(title, count)}</span>
-          <span class="meta">${entries.length} opções <i class="fas fa-chevron-down ml-2"></i></span>
+          <span class="meta"><i class="fas fa-chevron-down ml-2"></i></span>
         </summary>
         <div class="filter-panel">
           <div class="space-y-2 pt-3 max-h-72 overflow-y-auto">
@@ -832,6 +877,10 @@ function sortPMRR() {
   if (tipo === 'exposicao') pmrrFiltrados.sort((a,b) => (b.pessoas_em_risco || 0) - (a.pessoas_em_risco || 0));
   else if (tipo === 'barragens') pmrrFiltrados.sort((a,b) => (b.qtd_barragens || 0) - (a.qtd_barragens || 0));
   else if (tipo === 'pib') pmrrFiltrados.sort((a,b) => (b.pib_per_capita || 0) - (a.pib_per_capita || 0));
+  else if (tipo === 'oportunidade') pmrrFiltrados.sort((a,b) => {
+    const rank = {'Alta oportunidade': 3, 'Média oportunidade': 2, 'Baixa oportunidade': 1};
+    return (rank[getPMRROpportunity(b)] - rank[getPMRROpportunity(a)]) || ((b.pessoas_em_risco || 0) - (a.pessoas_em_risco || 0));
+  });
   else pmrrFiltrados.sort((a,b) => a.nome.localeCompare(b.nome));
 }
 
@@ -840,12 +889,16 @@ function sortMineradoras() {
   if (tipo === 'barragens') mineradorasFiltradas.sort((a,b) => (b.barragens_ativas || 0) - (a.barragens_ativas || 0));
   else if (tipo === 'area') mineradorasFiltradas.sort((a,b) => (b.area_total_ha || 0) - (a.area_total_ha || 0));
   else if (tipo === 'emergencia') mineradorasFiltradas.sort((a,b) => (normalizeText(b.nivel_emergencia).includes('nivel') ? 1 : 0) - (normalizeText(a.nivel_emergencia).includes('nivel') ? 1 : 0));
+  else if (tipo === 'oportunidade') mineradorasFiltradas.sort((a,b) => {
+    const rank = {'Alta oportunidade': 3, 'Média oportunidade': 2, 'Baixa oportunidade': 1};
+    return (rank[getMineradorasOpportunity(b)] - rank[getMineradorasOpportunity(a)]) || ((b.area_total_ha || 0) - (a.area_total_ha || 0));
+  });
   else mineradorasFiltradas.sort((a,b) => a.empresa.localeCompare(b.empresa));
 }
 
 function updatePMRR() {
   document.getElementById('pmrr-total').textContent = formatNumber(pmrrFiltrados.length);
-  document.getElementById('pmrr-sem-registro').textContent = formatNumber(pmrrFiltrados.filter(m => (m.status_pmrr || 'SEM REGISTRO').includes('SEM REGISTRO')).length);
+  document.getElementById('pmrr-sem-registro').textContent = formatNumber(pmrrFiltrados.filter(m => normalizePMRRStatus(m.status_pmrr || 'SEM REGISTRO') === 'Sem PMRR').length);
   document.getElementById('pmrr-barragens').textContent = formatNumber(pmrrFiltrados.filter(m => m.tem_barragens).length);
   document.getElementById('pmrr-alta-exposicao').textContent = formatNumber(pmrrFiltrados.filter(m => (m.pessoas_em_risco || 0) >= 10000).length);
   document.getElementById('pmrr-total-resultados').textContent = `(${formatNumber(pmrrFiltrados.length)})`;
@@ -890,6 +943,7 @@ function renderPMRRList() {
           <div class="flex items-center gap-2 flex-wrap">
             <h4 class="font-semibold text-gray-900">${m.nome} <span class="text-gray-400 font-normal">· ${getEstadoLabel(m.uf)}</span></h4>
             ${badgeForPMRR(m.status_pmrr)}
+            ${badgeForOpportunity(getPMRROpportunity(m))}
             ${m.tem_barragens ? '<span class="badge bg-soft-blue">Com barragens</span>' : ''}
           </div>
           <div class="text-sm text-gray-600 mt-2 flex flex-wrap gap-2">
@@ -960,6 +1014,7 @@ function renderMineradorasList() {
           <div class="flex items-center gap-2 flex-wrap">
             <h4 class="font-semibold text-gray-900">${m.operacao || m.empresa} <span class="text-gray-400 font-normal">· ${getEstadoLabel(m.uf)}</span></h4>
             ${badgeForBarragemPresence(m.barragens_ativas)}
+            ${badgeForOpportunity(getMineradorasOpportunity(m))}
             ${badgeForCRI(m.cri_max)}
             ${badgeForDPA(m.dpa_max)}
             ${badgeForEmergency(m.nivel_emergencia)}
